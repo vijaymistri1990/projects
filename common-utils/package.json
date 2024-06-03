@@ -1,0 +1,11 @@
+{
+  "name": "common-utils",
+  "version": "1.0.0",
+  "description": "common functions into package",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "identixweb",
+  "license": "ISC"
+}
