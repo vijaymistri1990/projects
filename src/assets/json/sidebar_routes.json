@@ -1,0 +1,17 @@
+[
+    {
+        "display_name": "Dashboard",
+        "route": "/admin/dashboard",
+        "icon": "bx bx-home-alt"
+    },
+    {
+        "display_name": "User",
+        "route": "/admin/user",
+        "icon": "bx bx-package"
+    },
+    {
+        "display_name": "Simulator",
+        "route": "/admin/simulator",
+        "icon": "bx bx-add-to-queue"
+    }
+]
