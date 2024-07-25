@@ -8,7 +8,7 @@ const ogs = require('open-graph-scraper');
 const fs = require('fs');
 
 const newAddSimulator = async (req, res) => {
-    let { status_code_config: statusCode, en_message_config: en } = config;
+    let { status_code_config: statusCode, en_message_config: en } =config;
     let reqData = req.body;
     try {
         if (common.isRealValue(reqData)) {
