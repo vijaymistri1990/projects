@@ -1,10 +1,11 @@
 "use strict";
-const db = require("./db_functions");
-const response_handler = require('./response_handler');
-const log_fun = require("./log_function")
+import * as response_handler from './response_handler.js';
+import * as log_fun from "./log_function.js";
+// Note: db_functions is kept for utility functions like encryption/decryption
+import db_functions from './db_functions.js';
 
-module.exports = {
-    db,
+export {
     response_handler,
-    log_fun
+    log_fun,
+    db_functions
 };

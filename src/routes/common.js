@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+
 const router = express.Router();
 // const { GenrerateToken } = require("../controller");
 
 /*router.post("/generate-token", GenrerateToken.create);*/
 
-module.exports = router;
+export default router;

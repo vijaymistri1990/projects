@@ -1,0 +1,657 @@
+{
+	"info": {
+		"_postman_id": "simulator-api-collection",
+		"name": "Simulator API",
+		"description": "Complete API collection for the Simulator Node.js backend. Base URL: http://localhost:4000/api/v1\n\nAuthentication: After calling /sign-in, copy the `token` from the response and set it as the `access-token` header for all protected routes.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:4000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string",
+			"description": "Paste the token from /sign-in response here"
+		}
+	],
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Test Server",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/test",
+							"host": ["{{base_url}}"],
+							"path": ["test"]
+						},
+						"description": "Check if the server is running and correctly configured."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Sign In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData && jsonData.data && jsonData.data.token) {",
+									"    pm.collectionVariables.set('access_token', jsonData.data.token);",
+									"    console.log('Token saved:', jsonData.data.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_name\": \"admin\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sign-in",
+							"host": ["{{base_url}}"],
+							"path": ["sign-in"]
+						},
+						"description": "Login with username and password. The response contains a `token` (base64 encoded JWT). The test script auto-saves it to the `access_token` collection variable."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin - Users",
+			"description": "User management APIs (Admin only). No auth header required based on current route setup.",
+			"item": [
+				{
+					"name": "Create New User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_name\": \"john_doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/new-user",
+							"host": ["{{base_url}}"],
+							"path": ["new-user"]
+						},
+						"description": "Create a new user. Also creates 12 months of PerformanceSheet and WorkSheet records for the user automatically."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user-list?page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["user-list"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Records per page (default: 10)"
+								}
+							]
+						},
+						"description": "Get paginated list of all users."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"user_name\": \"john_doe_updated\",\n    \"email\": \"john_updated@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/update-user",
+							"host": ["{{base_url}}"],
+							"path": ["update-user"]
+						},
+						"description": "Update a user's username and/or email by their ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"password\": \"newpassword123\",\n    \"confirm_password\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/update-password",
+							"host": ["{{base_url}}"],
+							"path": ["update-password"]
+						},
+						"description": "Update a user's password. `password` and `confirm_password` must match."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/delete-user",
+							"host": ["{{base_url}}"],
+							"path": ["delete-user"]
+						},
+						"description": "Delete a user by ID. Also deletes all related SimulatorUserData, PerformanceSheet, and WorkSheet records."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin - Simulators",
+			"description": "Simulator management APIs (Admin only).",
+			"item": [
+				{
+					"name": "Add Simulator",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": \"Simulator Title\",\n    \"result\": \"Description of the simulator\",\n    \"locale\": \"English(in)\",\n    \"user_location\": \"India\",\n    \"longtitude\": \"72.8777\",\n    \"latitude\": \"19.0760\",\n    \"result_show\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/add-simulator",
+							"host": ["{{base_url}}"],
+							"path": ["add-simulator"]
+						},
+						"description": "Create a new simulator. Returns the new simulator's `id`."
+					},
+					"response": []
+				},
+				{
+					"name": "Add Simulator Topics",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"simulator_id\": 1,\n    \"slider_name\": \"Topic 1\",\n    \"simulator_type\": \"1\",\n    \"link\": \"https://example.com/article\",\n    \"location\": \"India\",\n    \"slider_type\": \"image\",\n    \"slider_result_json\": {},\n    \"final_result_show\": true,\n    \"final_result\": \"Some final result text\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/add-simulator-topics",
+							"host": ["{{base_url}}"],
+							"path": ["add-simulator-topics"]
+						},
+						"description": "Add a topic to an existing simulator.\n\n**simulator_type values:**\n- `1` = Article/Link (fetches Open Graph metadata)\n- `2` = Quiz/Questions (add `question_type` and `questions` array)\n- `3` = Link with description (add `link_with_description`)\n- `4` = YouTube videos (add `more_videos` array of URLs)\n- `5` = Scribble/Image (add `scrb_link` as base64 data URL)\n\n**Example for Quiz (type 2):**\n```json\n{\n  \"simulator_id\": 1,\n  \"slider_name\": \"Quiz Topic\",\n  \"simulator_type\": \"2\",\n  \"question_type\": \"mcq\",\n  \"questions\": [{\"question\": \"Q1?\", \"options\": [\"A\",\"B\",\"C\",\"D\"], \"answer\": \"A\"}]\n}\n```\n\n**Example for YouTube (type 4):**\n```json\n{\n  \"simulator_id\": 1,\n  \"slider_name\": \"Videos Topic\",\n  \"simulator_type\": \"4\",\n  \"more_videos\": [\"https://youtube.com/watch?v=abc\", \"https://youtube.com/watch?v=xyz\"]\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Simulator List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/simulator-list?page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-list"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Records per page (default: 10)"
+								}
+							]
+						},
+						"description": "Get paginated list of all simulators."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Simulator Topics List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/simulator-topics-list?simulator_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-topics-list"],
+							"query": [
+								{
+									"key": "simulator_id",
+									"value": "1",
+									"description": "ID of the simulator to get topics for"
+								}
+							]
+						},
+						"description": "Get all topics for a given simulator."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Simulator Topic Data (Single)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/simulator-topics-list-data?simulator_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-topics-list-data"],
+							"query": [
+								{
+									"key": "simulator_id",
+									"value": "1",
+									"description": "ID of the simulator topic (SimulatorData ID)"
+								}
+							]
+						},
+						"description": "Get a single simulator topic by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Simulator",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"query\": \"Updated Simulator Title\",\n    \"result\": \"Updated description\",\n    \"locale\": \"English(in)\",\n    \"user_location\": \"India\",\n    \"longtitude\": \"72.8777\",\n    \"latitude\": \"19.0760\",\n    \"result_show\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/simulator-update",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-update"]
+						},
+						"description": "Update a simulator's details."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Simulator Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"status\": \"1\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/simulator-status-update",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-status-update"]
+						},
+						"description": "Update the status of a simulator. `status`: `\"1\"` = active, `\"0\"` = inactive."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Simulator Topics",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"simulator_id\": 1,\n    \"slider_name\": \"Updated Topic Name\",\n    \"simulator_type\": \"1\",\n    \"link\": \"https://example.com/updated-article\",\n    \"location\": \"India\",\n    \"slider_type\": \"image\",\n    \"slider_result_json\": {},\n    \"final_result_show\": true,\n    \"final_result\": \"Updated final result\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/simulator-topics-update",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-topics-update"]
+						},
+						"description": "Update a simulator topic. Same `simulator_type` rules apply as in Add Simulator Topics."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Simulator",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"simulator_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/simulator-delete",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-delete"]
+						},
+						"description": "Delete a simulator and all its topics."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Simulator Topic",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"simulator_topic_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/simulator-topic-delete",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-topic-delete"]
+						},
+						"description": "Delete a single simulator topic by its ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User - Protected",
+			"description": "User-facing APIs that require authentication. Add the JWT token from /sign-in as the `access-token` header.",
+			"item": [
+				{
+					"name": "Get Simulator Topic List (User)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "{{access_token}}",
+								"description": "JWT token from /sign-in response"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/simulator-topic-list?page=1&limit=10&language=English(in)",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-topic-list"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "language",
+									"value": "English(in)",
+									"description": "e.g. English(in), Hindi, etc."
+								}
+							]
+						},
+						"description": "Get paginated list of simulators for the logged-in user. Filters by language/locale and tracks which simulators the user has already completed."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Simulator Topic Data (User)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "{{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/simulator-topic-data?simulator_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-topic-data"],
+							"query": [
+								{
+									"key": "simulator_id",
+									"value": "1",
+									"description": "ID of the simulator to get full details for"
+								}
+							]
+						},
+						"description": "Get all topics and data for a specific simulator, along with the user's progress on it."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Simulator Topic Result",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"simulator_id\": 1,\n    \"simulator_result\": \"pass\",\n    \"simulator_comment\": \"Good performance\",\n    \"type\": \"0\",\n    \"sxs_outcome\": \"positive\",\n    \"nm_outcome\": \"neutral\",\n    \"simulator_topic_result\": {\n        \"topic_1\": \"pass\",\n        \"topic_2\": \"fail\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/simulator-topic-sub-data",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-topic-sub-data"]
+						},
+						"description": "Submit the user's result for completing a simulator. The `type` field: `\"0\"` = non-English, `\"1\"` = English(in)."
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Simulator Progress",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"0\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/simulator-reset",
+							"host": ["{{base_url}}"],
+							"path": ["simulator-reset"]
+						},
+						"description": "Reset/delete all simulator submission records for the logged-in user for a given type. `type`: `\"0\"` = non-English, `\"1\"` = English(in)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Performance Result",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "{{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/performance-result",
+							"host": ["{{base_url}}"],
+							"path": ["performance-result"]
+						},
+						"description": "Get all performance sheet records (12 months) for the logged-in user."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Performance Result",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"result\": {\n        \"month\": 1,\n        \"score\": 85,\n        \"notes\": \"Excellent progress\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/performance-result",
+							"host": ["{{base_url}}"],
+							"path": ["performance-result"]
+						},
+						"description": "Update a specific performance sheet entry for the logged-in user. `id` is the PerformanceSheet record ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Worksheet",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "{{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/work-sheet",
+							"host": ["{{base_url}}"],
+							"path": ["work-sheet"]
+						},
+						"description": "Get all worksheet records (12 months) for the logged-in user."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Worksheet",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "access-token",
+								"value": "{{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"result\": {\n        \"month\": 1,\n        \"entries\": [\n            {\"date\": \"2026-03-01\", \"notes\": \"Completed module 1\"}\n        ]\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/work-sheet",
+							"host": ["{{base_url}}"],
+							"path": ["work-sheet"]
+						},
+						"description": "Update a specific worksheet entry for the logged-in user. `id` is the WorkSheet record ID."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

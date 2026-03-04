@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import { userController } from "../controllers/index.js";
+import verify from "../middleware/verify.js";
+
 const router = express.Router();
-const { userController } = require("../controller");
-const verify = require("../middleware/verify");
 
 router.post('/sign-in', userController.signIn);
 
@@ -18,4 +19,4 @@ router.put('/performance-result',userController.performanceResultUpdate);
 router.get('/work-sheet',userController.worksheet);
 router.put('/work-sheet',userController.worksheetUpdate);
 
-module.exports = router;
+export default router;

@@ -1,5 +1,6 @@
-const express = require("express");
-const { adminController, simulatorController} = require("../controller");
+import express from "express";
+import { adminController, simulatorController } from "../controllers/index.js";
+
 const router = express.Router();
 // const { DashboardController } = require("../controller");
 
@@ -22,4 +23,4 @@ router.put('/simulator-status-update', simulatorController.simulatorStatusUpdate
 router.put('/simulator-update', simulatorController.simulatorUpdate);
 router.put('/simulator-topics-update', simulatorController.simulatorUpdateTopics);
 
-module.exports = router;
+export default router;

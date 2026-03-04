@@ -17,7 +17,7 @@ function handleSuccess(statusCode, message, data, res) {
     });
 }
 
-module.exports = {
+export {
     handleError,
     handleSuccess
 };

@@ -1,8 +1,7 @@
 "use strict";
-const jwt = require("jsonwebtoken");
-const config = require('../config/config');
-const { db } = require("../helper");
-const { handleError } = require('../helper/response_handler');
+import jwt from "jsonwebtoken";
+import config from '../config/config.js';
+import { handleError } from '../helper/response_handler.js';
 const verifyToken = (req, res, next) => {
     let { status_code_config: statusCode, en_message_config: en } = config;
     if (req.method !== "OPTIONS") {
@@ -29,4 +28,4 @@ const verifyToken = (req, res, next) => {
         next();
     }
 };
-module.exports = verifyToken;
+export default verifyToken;

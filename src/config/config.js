@@ -3,27 +3,26 @@ const config = {
     "HOST": process.env.HOST,
     "secret": process.env.secret,
     "db_config": {
-        "host": process.env.db_host,
-        "user": process.env.db_user,
-        "password": process.env.db_password,
-        "database": process.env.db_database,
-        "debug": (process.env.debug == "true"),
-        "waitForConnections": (process.env.waitForConnections == "true"),
-        "queueLimit": process.env.queueLimit,
-        "multipleStatements": (process.env.multipleStatements == "true"),
-        "charset": process.env.charset,
-        "connectionLimit": 1
+        "host": process.env.DB_HOST,
+        "port": process.env.DB_PORT,
+        "user": process.env.DB_USER,
+        "password": process.env.DB_PASSWORD,
+        "database": process.env.DB_NAME,
+        "min": process.env.DB_POOL_MIN,
+        "max": process.env.DB_POOL_MAX,
+        "idleTimeoutMillis": process.env.DB_IDLE_TIMEOUT,
+        "connectionTimeoutMillis": process.env.DB_CONNECTION_TIMEOUT
     },
     "db_log_config": {
-        "host": process.env.log_host,
-        "user": process.env.log_user,
-        "password": process.env.log_password,
-        "database": process.env.log_database,
-        "debug": (process.env.debug == "true"),
-        "waitForConnections": (process.env.waitForConnections == "true"),
-        "queueLimit": process.env.queueLimit,
-        "multipleStatements": (process.env.multipleStatements == "true"),
-        "charset": process.env.charset
+        "host": process.env.DB_HOST,
+        "port": process.env.DB_PORT,
+        "user": process.env.DB_USER,
+        "password": process.env.DB_PASSWORD,
+        "database": process.env.DB_LOG_NAME,
+        "min": process.env.DB_POOL_MIN,
+        "max": process.env.DB_POOL_MAX,
+        "idleTimeoutMillis": process.env.DB_IDLE_TIMEOUT,
+        "connectionTimeoutMillis": process.env.DB_CONNECTION_TIMEOUT
     },
     /* res status code */
     'status_code_config': {
@@ -79,4 +78,4 @@ const config = {
     'TABLE_GENERAL': 'general',
     "APP_PREFIX": process.env.SITE_PREFIX
 }
-module.exports = config
+export default config;

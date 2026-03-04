@@ -1,9 +1,24 @@
-const mysql = require('mysql');
-const { db_config, db_log_config } = require('../config/config');
-const conn = mysql.createPool(db_config);
-const log_conn = mysql.createPool(db_log_config);
+import { Pool } from 'pg';
+import config from '../config/config.js';
 
-module.exports = {
+const { db_config, db_log_config } = config;
+
+// Create PostgreSQL connection pools
+const conn = new Pool(db_config);
+const log_conn = new Pool(db_log_config);
+
+// Handle connection errors
+conn.on('error', (err) => {
+    console.error('Unexpected error on idle client', err);
+    process.exit(-1);
+});
+
+log_conn.on('error', (err) => {
+    console.error('Unexpected error on idle log client', err);
+    process.exit(-1);
+});
+
+export {
     conn,
     log_conn
 };

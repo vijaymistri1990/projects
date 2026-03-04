@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "type": "module",
   "scripts": {
-    "local": "export SERVER=local || set SERVER=local&& nodemon server.js",
+    "local": "nodemon server.js",
+    "migrate": "node src/scripts/migrate.js",
     "live": "SERVER=live pm2 start server.js -i max --name 'live_simulator'"
   },
   "author": "",
@@ -19,7 +21,8 @@
     "google-search-results-nodejs": "^2.1.0",
     "helmet": "6.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mysql": "2.18.1",
+    "pg": "^8.11.3",
+    "sequelize": "^6.35.0",
     "open-graph-scraper": "^5.2.2"
   },
   "devDependencies": {
