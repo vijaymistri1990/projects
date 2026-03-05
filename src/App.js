@@ -1,46 +1,37 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { adminRoutes, authRoutes } from "./routes/routes";
 import Authlayout from "./layout/Authlayout";
 import Adminlayout from "./layout/Adminlayout";
 import 'bootstrap/dist/css/bootstrap.min.css';
-// Multi-layout function
-const AppRoute = ({ component: Component, layout: Layout, exact, ...rest }) => (
-  <Route
-    {...rest}
-    render={(props) => (
-      <Layout>
-        <Component {...props}></Component>
-      </Layout>
-    )}
-    exact
-  ></Route>
+
+// Multi-layout function for React Router v6
+const AppRoute = ({ component: Component, layout: Layout }) => (
+  <Layout>
+    <Component />
+  </Layout>
 );
 
 function App() {
   return (
     <Router>
-      <Switch>
+      <Routes>
         {authRoutes.map((route, idx) => (
-          <AppRoute
+          <Route
             key={idx}
             path={route.path}
-            component={route.component}
-            layout={Authlayout}
-            exact={true}
+            element={<AppRoute component={route.component} layout={Authlayout} />}
           />
         ))}
         {adminRoutes.map((route, idx) => (
-          <AppRoute
+          <Route
             key={idx}
             path={route.path}
-            component={route.component}
-            layout={Adminlayout}
-            exact={true}
+            element={<AppRoute component={route.component} layout={Adminlayout} />}
           />
         ))}
-        <Redirect strict from="/" to="/login" />
-      </Switch>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+      </Routes>
     </Router>
   );
 }

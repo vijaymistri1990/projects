@@ -1,14 +1,14 @@
 import { Button, Icon, LegacyCard, TextField } from '@shopify/polaris'
 import React, { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import * as Yup from "yup";
 import { ApiCall } from '../../helper/axios';
 import { MobileBackArrowMajor } from '@shopify/polaris-icons';
 import { getCookies } from '../../helper/commonFunctions';
 
 const UpdatePassword = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const { state } = useLocation();
     const [initialValues, setInitialValues] = useState({
         passWord: '',
@@ -38,18 +38,18 @@ const UpdatePassword = () => {
         let res = await ApiCall('PUT', '/update-password', data)
         let response = res?.data
         if (response?.statusCode === 200 && response?.status == "success") {
-            history.push('/admin/user')
+            navigate('/admin/user')
         }
     }
 
     useEffect(() => {
         let data = getCookies('userData');;
         if (data == null) {
-            history.push("/login");
+            navigate("/login");
         } else {
             let user = JSON.parse(data)?.user
             if (user == "0") {
-                history.push("/topic-list");
+                navigate("/topic-list");
             }
         }
     }, [])
@@ -60,7 +60,7 @@ const UpdatePassword = () => {
             <LegacyCard>
                 <div>
                     <span className='back-button p-2 mt-2'>
-                        <Button onClick={() => history.push({ pathname: "/admin/user/edit", state: state })}><Icon source={MobileBackArrowMajor} /></Button>
+                        <Button onClick={() => navigate("/admin/user/edit", { state: state })}><Icon source={MobileBackArrowMajor} /></Button>
                     </span>
                 </div>
                 <div className='p-2 mx-2'>

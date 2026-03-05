@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { InputGroup } from 'reactstrap';
 import QRCode from "react-qr-code";
 import MultiRangeSlider, { ChangeResult } from "multi-range-slider-react";
@@ -12,11 +12,11 @@ import Dashboard from './Dashboard';
 import UserHeader from '../../components/UserHeader';
 import { commonApi } from '../../helper/commanApi';
 import { getCookies } from '../../helper/commonFunctions';
-import {logger} from "workbox-core/_private";
+import { logger } from "workbox-core/_private";
 
 const Simulator = () => {
     let { simulator_id } = useParams();
-    let history = useHistory();
+    let navigate = useNavigate();
     let [simulatorData, setSimulatorData] = useState([]);
     let [allSimulatorData, setAllSimulatorData] = useState([]);
     let [defaultSelected, setDefaultSelected] = useState({});
@@ -208,7 +208,7 @@ const Simulator = () => {
                             eat_result: input_right_bar_range,
                             bar_width: Object.values(rightsideClassName)[0]?.querySelector('.bar').offsetWidth
                         }
-                        if(parseInt(input_left_bar_range) >= parseInt(db_slider_result_json?.left_0_rating_result_min) && parseInt(input_left_bar_range) <= parseInt(db_slider_result_json?.left_0_rating_result_max)){
+                        if (parseInt(input_left_bar_range) >= parseInt(db_slider_result_json?.left_0_rating_result_min) && parseInt(input_left_bar_range) <= parseInt(db_slider_result_json?.left_0_rating_result_max)) {
                             nm_outcome++;
                         }
                     }
@@ -286,19 +286,19 @@ const Simulator = () => {
             })
         }
         let sxs_outcome = '';
-        if(simulatorQueryData?.result_show == '1'){
-            if(simulatorQueryData?.result === parseInt(resultButton)){
+        if (simulatorQueryData?.result_show == '1') {
+            if (simulatorQueryData?.result === parseInt(resultButton)) {
                 sxs_outcome = 1;
-            }else{
+            } else {
                 sxs_outcome = 0;
             }
         }
         let data = {
             simulator_id: simulator_id,
             simulator_result: simulatorQueryData?.result_show == '1' ? resultButton : '',
-            type : (simulatorQueryData?.locale == "Hindi(in)") ? 0 : 1,
-            sxs_outcome : sxs_outcome,
-            nm_outcome : nm_outcome,
+            type: (simulatorQueryData?.locale == "Hindi(in)") ? 0 : 1,
+            sxs_outcome: sxs_outcome,
+            nm_outcome: nm_outcome,
             simulator_comment: commentBar,
             simulator_topic_result: topic_result
         }
@@ -330,7 +330,7 @@ const Simulator = () => {
 
     const handleNext = () => {
         if (nextSimulatorId && nextSimulatorId != '') {
-            history.push(`/simulator/${nextSimulatorId}`)
+            navigate(`/simulator/${nextSimulatorId}`)
             setIsShowBar(false);
             setCommentBar('');
             setResultButton(0);
@@ -363,7 +363,7 @@ const Simulator = () => {
                         <div className='container'>
                             <div className='d-flex justify-content-between'>
                                 <div className='d-flex gap-3 align-items-center'>
-                                    <span className='back-button'><Button onClick={() => { history.push('/topic-list'); }}><Icon source={MobileBackArrowMajor} /></Button></span>
+                                    <span className='back-button'><Button onClick={() => { navigate('/topic-list'); }}><Icon source={MobileBackArrowMajor} /></Button></span>
                                     <span className='custom-navigate-header'>Simulator</span>
                                 </div>
                                 <div>

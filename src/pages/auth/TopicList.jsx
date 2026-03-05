@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Spinner } from 'reactstrap';
-import { Link, useHistory } from "react-router-dom";
-import { IndexTable, LegacyCard, Pagination, Text, Icon, Button, Tabs, Toast, Page,Badge } from '@shopify/polaris';
+import { Link, useNavigate } from "react-router-dom";
+import { IndexTable, LegacyCard, Pagination, Text, Icon, Button, Tabs, Toast, Page, Badge } from '@shopify/polaris';
 import { ChevronDown, Eye, Edit, Link2, CheckCircle, XCircle } from 'react-feather'
 import { GetUserApiCall, UserApiCall } from '../../helper/axios';
 import { EditMinor, DeleteMinor, StatusActiveMajor, CancelMajor } from '@shopify/polaris-icons';
@@ -9,12 +9,12 @@ import Header from '../../components/Header';
 import UserHeader from '../../components/UserHeader';
 import '../../assets/css/style.css'
 import { getCookies } from '../../helper/commonFunctions';
-import {logger} from "workbox-core/_private";
+import { logger } from "workbox-core/_private";
 // import '../assets/css/react-dataTable-component.css'
 // import '@styles/react/libs/tables/react-dataTable-component.scss'   
 
 const TopicList = () => {
-    let history = useHistory();
+    let navigate = useNavigate();
     let [topicList, setTopicList] = useState([]);
     let [userSubData, setUserSubData] = useState([]);
     let [isComplete, setIsComplete] = useState({});
@@ -31,7 +31,7 @@ const TopicList = () => {
     const [startSimultorId, setStartSimultorId] = useState(0);
     let header = { authentication: getCookies('token') };
     // console.log('userSubData', userSubData);
-    const GetTopicData = async (page = 0,language='Hindi(in)') => {
+    const GetTopicData = async (page = 0, language = 'Hindi(in)') => {
         setLoading(true)
         let res = await GetUserApiCall('GET', `/simulator-topic-list?limit=30&page=${page}&language=${language}`, header);
         if (res.data.status === 'success' && res.data.statusCode === 200) {
@@ -70,12 +70,12 @@ const TopicList = () => {
             let obj = {};
             topicList.map((topic, index) => {
                 if (userSubData && userSubData.length && userSubData.some(obj2 => obj2.simulator_id === topic.id)) {
-                    let user_sub_data = userSubData.filter((item) => {return item.simulator_id == topic.id});
+                    let user_sub_data = userSubData.filter((item) => { return item.simulator_id == topic.id });
                     let nm_outcome = user_sub_data?.[0]?.nm_outcome;
                     let sxs_outcome = user_sub_data?.[0]?.sxs_outcome;
                     obj[topic.id] = {
-                      nm_outcome: nm_outcome,
-                      sxs_outcome : sxs_outcome
+                        nm_outcome: nm_outcome,
+                        sxs_outcome: sxs_outcome
                     };
                 } else {
                     obj[topic.id] = false;
@@ -88,7 +88,7 @@ const TopicList = () => {
 
 
     const rowMarkup = topicList?.map(
-        ({ id, query, name, password,result_show }, index) => (
+        ({ id, query, name, password, result_show }, index) => (
             <IndexTable.Row
                 id={id}
                 key={id}
@@ -98,18 +98,18 @@ const TopicList = () => {
                     {(currentPage * 30 - 30) + index + 1}
                 </IndexTable.Cell>
                 <IndexTable.Cell>
-                    <span className="dropdown-link" onClick={() => history.push(`/simulator/${id}`, Object.keys(isComplete).length && isComplete[id] ? isComplete[id] : false)}>{query}</span>
+                    <span className="dropdown-link" onClick={() => navigate(`/simulator/${id}`, { state: Object.keys(isComplete).length && isComplete[id] ? isComplete[id] : false })}>{query}</span>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
                     {Object.keys(isComplete).length && isComplete[id] ?
-                        (parseInt(isComplete[id].nm_outcome) >= 10 ) ?  <Badge status="success">{parseInt(isComplete[id].nm_outcome)} Correct</Badge> : <Badge status="critical">{(10 - parseInt(isComplete[id].nm_outcome))} Incorrect</Badge>
+                        (parseInt(isComplete[id].nm_outcome) >= 10) ? <Badge status="success">{parseInt(isComplete[id].nm_outcome)} Correct</Badge> : <Badge status="critical">{(10 - parseInt(isComplete[id].nm_outcome))} Incorrect</Badge>
                         : <Badge>Incomplete</Badge>}
                 </IndexTable.Cell>
                 <IndexTable.Cell>
                     {Object.keys(isComplete).length && isComplete[id] ?
-                        (result_show == '1') ?  (isComplete[id].sxs_outcome) ?
+                        (result_show == '1') ? (isComplete[id].sxs_outcome) ?
                             <Badge status="success">Correct</Badge> : <Badge status="critical">Incorrect</Badge>
-                            :  'N/A'
+                            : 'N/A'
                         : <Badge>Incomplete</Badge>}
                 </IndexTable.Cell>
                 <IndexTable.Cell className='d-flex justify-content-start'>
@@ -124,7 +124,7 @@ const TopicList = () => {
 
     let resetData = async () => {
         let data = {
-            'type' : selected
+            'type': selected
         }
         let res = await UserApiCall('DELETE', '/simulator-reset', data, header);
         if (res.data.status === 'success' && res.data.statusCode === 200) {
@@ -133,7 +133,7 @@ const TopicList = () => {
             GetTopicData(0);
             window.scrollTo(0, 0);
         } else {
-            history.push('/login')
+            navigate('/login')
         }
     };
 
@@ -146,7 +146,7 @@ const TopicList = () => {
     const handleTabChange = async (selectedTabIndex) => {
         setSelected(selectedTabIndex)
         let language = selectedTabIndex == 0 ? 'Hindi(in)' : 'English(in)';
-        GetTopicData(0,language);
+        GetTopicData(0, language);
     }
 
     const tabs = [
@@ -169,7 +169,7 @@ const TopicList = () => {
             <div className='header-padd'>
                 <Page title='Simulator List' primaryAction={
                     <div className='d-flex justify-content-end gap-2'>
-                        <Button default onClick={() => history.push(`/simulator/${startSimultorId}`)}>start</Button>
+                        <Button default onClick={() => navigate(`/simulator/${startSimultorId}`)}>start</Button>
                         {userSubData?.length && isResultAvailable ? <Button default onClick={() => resetData()}>Reset</Button> : <></>}
                     </div>
                 }>

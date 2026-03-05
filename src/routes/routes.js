@@ -14,7 +14,6 @@ import TopiclistAdmin from "../pages/admin/simulator/Topiclist";
 import AddsimulatorTopic from "../pages/admin/simulator/AddsimulatorTopic";
 import { useEffect, React } from "react";
 // import React from 'react'
-import { useHistory } from "react-router-dom";
 
 
 const authRoutes = [

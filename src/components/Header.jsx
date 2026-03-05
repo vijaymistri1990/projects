@@ -1,16 +1,16 @@
 import React from "react";
 import Dropdown from "./Dropdown";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { removeCookies } from "../helper/commonFunctions";
 
 const Header = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const logout = () => {
     removeCookies('token')
     removeCookies('userData')
     localStorage.removeItem("token");
     localStorage.removeItem("userData");
-    history.push('/login')
+    navigate('/login')
   }
 
   return (

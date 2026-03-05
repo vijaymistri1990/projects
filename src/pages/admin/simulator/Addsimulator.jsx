@@ -1,7 +1,7 @@
 import { LegacyCard, TextField, Select, Button, Icon } from '@shopify/polaris'
 import { useFormik } from 'formik';
 import React, { useState, useCallback } from 'react'
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import * as Yup from "yup";
 import { ApiCall } from '../../../helper/axios';
 import { useEffect } from 'react';
@@ -10,7 +10,7 @@ import { getCookies } from '../../../helper/commonFunctions';
 import ToggleSwitch from "../../../components/ToggleSwitch";
 
 const Addsimulator = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const { state } = useLocation();
     const [loader, setLoader] = useState(false)
     const [resultEnable, setResultEnable] = useState(false)
@@ -20,7 +20,7 @@ const Addsimulator = () => {
         user_Location: '',
         longtitude: '',
         latitide: '',
-        query_result_show : false,
+        query_result_show: false,
         query_Result: '',
     })
 
@@ -60,11 +60,11 @@ const Addsimulator = () => {
     useEffect(() => {
         let data = getCookies('userData');
         if (data == null) {
-            history.push("/login");
+            navigate("/login");
         } else {
             let user = JSON.parse(data)?.user
             if (user == "0") {
-                history.push("/topic-list");
+                navigate("/topic-list");
             }
         }
     }, [])
@@ -90,7 +90,7 @@ const Addsimulator = () => {
             longtitude: values.longtitude,
             latitude: values.latitide,
             result_show: values.query_result_show ? "1" : "0",
-            result : values.query_result_show ? values.query_Result : ''
+            result: values.query_result_show ? values.query_Result : ''
         }
         let res = '';
         if (state?.isEdit) {
@@ -98,16 +98,13 @@ const Addsimulator = () => {
             res = await ApiCall('PUT', '/simulator-update', data)
             let response = res?.data
             if (response?.statusCode === 200 && response?.status == "success") {
-                history.push('/admin/simulator')
+                navigate('/admin/simulator')
             }
         } else {
             res = await ApiCall('POST', '/add-simulator', data)
             let response = res?.data
             if (response?.statusCode === 200 && response?.status == "success") {
-                history.push({
-                    pathname: '/admin/simulator/topic',
-                    state: response?.data.id
-                })
+                navigate('/admin/simulator/topic', { state: response?.data.id })
             }
         }
         setLoader(false)
@@ -117,7 +114,7 @@ const Addsimulator = () => {
         <div className='mt-2'>
             <LegacyCard>  <div>
                 <span className='back-button p-2 mt-2'>
-                    <Button onClick={() => history.push('/admin/simulator')}><Icon source={MobileBackArrowMajor} /></Button>
+                    <Button onClick={() => navigate('/admin/simulator')}><Icon source={MobileBackArrowMajor} /></Button>
                 </span>
             </div>
                 <div className='p-2 mx-2'>
@@ -186,7 +183,7 @@ const Addsimulator = () => {
                         <div className='col-sm-6 mt-2'>
                             <div className='d-flex'>
                                 <div><label>Query result Show</label></div>
-                                <div className='px-2 pt-1'> <ToggleSwitch width={30} height={15} handleDiameter={12} checked={formik.values.query_result_show} handleChange={(value) => {formik.setFieldValue('query_result_show', value);setResultEnable(value);}} /></div>
+                                <div className='px-2 pt-1'> <ToggleSwitch width={30} height={15} handleDiameter={12} checked={formik.values.query_result_show} handleChange={(value) => { formik.setFieldValue('query_result_show', value); setResultEnable(value); }} /></div>
                             </div>
 
                         </div>

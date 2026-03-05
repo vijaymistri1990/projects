@@ -1,17 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { IndexTable, LegacyCard, Pagination, Text, Icon, Button, Toast } from '@shopify/polaris';
 import { ApiCall, GetApiCall } from "../../helper/axios";
 import { EditMinor, DeleteMinor } from '@shopify/polaris-icons';
 import DeleteModal from "../../components/DeleteModel";
-import { useHistory } from "react-router-dom";
-import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { getCookies } from "../../helper/commonFunctions";
 import Skeleton from "../../components/Skeleton";
 
 const User = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const [userDataList, setUserDataList] = useState([])
-  const [allUserData, setAllUserData] = useState('')
   const [deletePopUpActive, setDeletePopUpActive] = useState(false)
   const [deleteId, setDeleteId] = useState('');
   const [saveLoader, setSaveLoader] = useState(false);
@@ -19,7 +17,7 @@ const User = () => {
   const [totalData, setTotalData] = useState(0)
   const [active, setActive] = useState(false);
   const [totalPages, setTotalPages] = useState(0)
-  const [rowPerPage, setRowPerPage] = useState(10)
+  const [rowPerPage] = useState(10)
   const [loader, setLoader] = useState(true);
   useEffect(() => {
     UserDataget()
@@ -28,42 +26,35 @@ const User = () => {
   useEffect(() => {
     let data = getCookies('userData');
     if (data == null) {
-      history.push("/login");
+      navigate("/login");
     } else {
       let user = JSON.parse(data)?.user
       if (user == "0") {
-        history.push("/topic-list");
+        navigate("/topic-list");
       }
     }
   }, [])
 
   const UserDataget = async () => {
-    const res = await GetApiCall('GET', `/user-list?limit=10&page=${page}`, [])
+    const res = await GetApiCall(`/user-list?limit=10&page=${page}`)
     let response = res?.data
     if (response?.statusCode === 200 && response?.status == "success") {
       setUserDataList(response?.data?.user_data)
-      setAllUserData(response?.data?.user_data)
       setTotalData(response?.data?.total_data)
       const pages = Math.ceil(res.data.data.total_data / rowPerPage)
       setTotalPages(pages)
     } else if (response?.statusCode === 200 && response?.status == "error") {
-      // setpage(page - 1)
       setUserDataList([])
-      setAllUserData([])
       setTotalData(0)
     } else {
       setUserDataList([])
-      setAllUserData([])
       setTotalData(0)
     }
     setLoader(false)
   }
 
   const handleEdit = (data) => {
-    history.push({
-      pathname: '/admin/user/edit',
-      state: data
-    })
+    navigate('/admin/user/edit', { state: data })
   }
 
 
@@ -72,21 +63,21 @@ const User = () => {
     plural: 'Users',
   };
 
-  const rowMarkup = userDataList?.map(({ id, user_name, name, password, type }, index) => (
+  const rowMarkup = userDataList?.map(({ id, username, name, password, type }, index) => (
     <IndexTable.Row
       id={id}
       position={index}
       key={index}
     >
       <IndexTable.Cell >{page * 10 - 10 + index + 1} </IndexTable.Cell>
-      <IndexTable.Cell>{user_name}</IndexTable.Cell>
+      <IndexTable.Cell>{username}</IndexTable.Cell>
       <IndexTable.Cell>{name}</IndexTable.Cell>
       <IndexTable.Cell>{password}</IndexTable.Cell>
       <IndexTable.Cell>{type == "0" ? "User" : "Admin"}</IndexTable.Cell>
       <IndexTable.Cell>
         <div className="d-inline-flex p-2">
           <div className="px-2 cursor-pointer" onClick={() => handleEdit({
-            user_name: user_name,
+            user_name: username,
             name: name,
             id: id
           })}><Icon source={EditMinor} color="base" /></div>
@@ -99,7 +90,7 @@ const User = () => {
 
   const deleteUser = async (id) => {
     setSaveLoader(true)
-    const response = await ApiCall('DELETE', `/delete-user`, { id: id }, [])
+    const response = await ApiCall('DELETE', `/delete-user`, { id: id })
     // console.log(response.data, 'response');
     if (response?.data.statusCode === 200 && response?.data.status == "success") {
       UserDataget()
@@ -131,7 +122,7 @@ const User = () => {
   return (
     <>
       {loader ? <Skeleton /> : <>   <div className="mt-2 sl-add-button">
-        <Button onClick={() => history.push("/admin/user/create")}>
+        <Button onClick={() => navigate("/admin/user/create")}>
           Add user
         </Button>
       </div>

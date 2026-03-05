@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SCLOGO from "../../assets/img/sl-logo.jpeg";
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ApiCall } from "../../helper/axios"
 import { Button, TextField } from "@shopify/polaris";
 import { getCookies, setCookie } from "../../helper/commonFunctions";
@@ -9,9 +9,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 const Signin = () => {
-  const history = useHistory();
-  // const [userName, setUserName] = useState('')
-  // const [password, setPassWord] = useState('')
+  const navigate = useNavigate();
   const [loader, setLoader] = useState(false)
 
   const [initialValues, setInitialValues] = useState({
@@ -20,33 +18,30 @@ const Signin = () => {
   })
 
   let validationSchema = Yup.object().shape({
-    userName: Yup.string().required('required'),
-    password: Yup.string().required('required'),
+    userName: Yup.string().required('Username is required'),
+    password: Yup.string().required('Password is required'),
   })
 
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: validationSchema,
-    // enableReinitialize: true,
     onSubmit: (values) => {
       handleSave(values)
     }
   });
 
   useEffect(() => {
-    // const userData = localStorage.getItem("userData");
     let userData = getCookies('userData');
     let token = getCookies('token');
     if (userData && token) {
       let user = JSON.parse(userData)?.user
       if (user == "1") {
-        history.push("/admin/dashboard");
+        navigate("/admin/dashboard");
       } else {
-        history.push("/topic-list");
+        navigate("/topic-list");
       }
     }
-
-  }, [])
+  }, [navigate])
 
   const handleSave = async (values) => {
     setLoader(true)
@@ -54,19 +49,39 @@ const Signin = () => {
       user_name: values.userName,
       password: values.password
     }
-    const res = await ApiCall('POST', `/sign-in`, data, [])
-    let response = res?.data
-    if (response?.statusCode === 200 && response?.status == "success") {
-      localStorage.setItem("userData", JSON.stringify(response.data.user_data));
-      localStorage.setItem("token", JSON.stringify(response.data.token));
-      setCookie('userData', JSON.stringify(response.data.user_data))
-      setCookie('token', JSON.stringify(response.data.token))
-      if ((response?.data?.user_data).user == 1) {
-        history.push('/admin/dashboard')
+
+    try {
+      const res = await ApiCall('POST', `/sign-in`, data)
+      let response = res?.data
+
+      console.log("Login response:", response); // Debug log
+
+      if (response?.statusCode === 200 && response?.status == "success") {
+        // Store user data and token
+        localStorage.setItem("userData", JSON.stringify(response.data.user_data));
+        localStorage.setItem("token", response.data.token); // Don't double stringify
+        setCookie('userData', JSON.stringify(response.data.user_data))
+        setCookie('token', response.data.token) // Don't double stringify
+
+        console.log("User type:", response.data.user_data.user); // Debug log
+
+        // Redirect based on user type
+        if (response.data.user_data.user == 1) {
+          console.log("Redirecting to admin dashboard"); // Debug log
+          navigate('/admin/dashboard')
+        } else {
+          console.log("Redirecting to topic list"); // Debug log
+          navigate('/topic-list')
+        }
       } else {
-        history.push('/topic-list')
+        console.error("Login failed:", response);
+        alert(response?.message || "Login failed");
       }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Login failed. Please try again.");
     }
+
     setLoader(false)
   }
 
@@ -91,18 +106,18 @@ const Signin = () => {
           <div className="auth-body">
             <div className="auth-form-validation">
               <div className="input-field">
-                <label htmlFor="email" className="input-label">
-                  Email address
+                <label htmlFor="userName" className="input-label">
+                  Username
                 </label>
                 <input
                   type="text"
                   className="input-control"
-                  // style={{ borderColor: (formik.errors.password && formik.touched.password) && '1px solid red' }}
-                  id="email"
-                  placeholder="example@gmail.com"
+                  id="userName"
+                  placeholder="Enter your username"
                   autoComplete="off"
                   onKeyDown={onKeyDown}
-                  onChange={(e) => formik.setFieldValue('userName', e.target.value)} value={formik.values.userName}
+                  onChange={(e) => formik.setFieldValue('userName', e.target.value)}
+                  value={formik.values.userName}
                   required
                 />
                 <p style={{ color: 'red' }}>{formik.errors.userName && formik.touched.userName ? formik.errors.userName : ''}</p>
@@ -118,7 +133,8 @@ const Signin = () => {
                   className="input-control"
                   placeholder="Password"
                   autoComplete="off"
-                  onChange={(e) => formik.setFieldValue('password', e.target.value)} value={formik.values.password}
+                  onChange={(e) => formik.setFieldValue('password', e.target.value)}
+                  value={formik.values.password}
                   onKeyDown={onKeyDown}
                   required
                 />
@@ -131,7 +147,6 @@ const Signin = () => {
           </div>
         </div>
       </div>
-
     </>
   );
 };

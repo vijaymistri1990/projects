@@ -1,24 +1,24 @@
 import React, { useEffect } from "react";
 import Decoreleft from "../../assets/img/decore-left.png";
 import Decoreright from "../../assets/img/decore-right.png";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getCookies } from '../../helper/commonFunctions';
 import Skeleton from "../../components/Skeleton";
 
 const Dashboard = () => {
-  let history = useHistory();
-
+  let navigate = useNavigate();
+  console.log("getCookies('userData')", getCookies('userData'))
   useEffect(() => {
     let data = getCookies('userData');
     if (data == null) {
-      history.push("/login");
+      navigate("/login");
     } else {
       let user = JSON.parse(data)?.user
       if (user == "0") {
-        history.push("/topic-list");
+        navigate("/topic-list");
       }
     }
-  }, [])
+  }, [navigate])
 
   return (
     <React.Fragment>

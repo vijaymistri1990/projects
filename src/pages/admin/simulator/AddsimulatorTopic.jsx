@@ -3,7 +3,7 @@ import { useFormik } from 'formik';
 import React, { useCallback, useEffect, useState } from 'react'
 import * as Yup from "yup";
 import { CirclePlusMajor, DeleteMajor } from '@shopify/polaris-icons';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ApiCall, GetApiCall } from '../../../helper/axios';
 // import { ToggleSwitch } from '../../../components/ToggleSwitch'
 import ToggleSwitch from '../../../components/ToggleSwitch';
@@ -11,7 +11,7 @@ import { MobileBackArrowMajor, NoteMinor } from '@shopify/polaris-icons';
 import { sampleFileApi } from '../../../helper/commanApi';
 import { getCookies } from '../../../helper/commonFunctions';
 const AddsimulatorTopic = () => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const { state } = useLocation();
     const [simulatorType, setSimulatorType] = useState("0")
     const [loader, setLoader] = useState(false)
@@ -94,11 +94,11 @@ const AddsimulatorTopic = () => {
     useEffect(() => {
         let data = getCookies('userData');
         if (data == null) {
-            history.push("/login");
+            navigate("/login");
         } else {
             let user = JSON.parse(data)?.user
             if (user == "0") {
-                history.push("/topic-list");
+                navigate("/topic-list");
             }
         }
     }, [])
@@ -256,9 +256,8 @@ const AddsimulatorTopic = () => {
         }
         let response = res?.data
         if (response?.statusCode === 200 && response?.status == "success") {
-            history.push({
-                pathname: '/admin/simulator/topic',
-                state: state.isEdit ? state.simulator_id : state?.state ? state.state : state,
+            navigate('/admin/simulator/topic', {
+                state: state.isEdit ? state.simulator_id : state?.state ? state.state : state
             })
             setLoader(false)
         }
@@ -324,15 +323,15 @@ const AddsimulatorTopic = () => {
     }, [state])
 
     const handleDropZoneDrop = useCallback((_dropFiles, acceptedFiles, _rejectedFiles) => {
-            if (_rejectedFiles.length == 0) {
-                const reader = new FileReader();
-                reader.readAsDataURL(acceptedFiles[0]);
-                reader.onload = () => {
-                    formik.setFieldValue('base64Image', reader.result)
-                }
-                formik.setFieldValue('image', acceptedFiles[0])
+        if (_rejectedFiles.length == 0) {
+            const reader = new FileReader();
+            reader.readAsDataURL(acceptedFiles[0]);
+            reader.onload = () => {
+                formik.setFieldValue('base64Image', reader.result)
             }
+            formik.setFieldValue('image', acceptedFiles[0])
         }
+    }
     );
 
     const validImageTypes = ['image/jpeg', 'image/png'];
@@ -341,7 +340,7 @@ const AddsimulatorTopic = () => {
         <div className='mt-2'>
             <LegacyCard>
                 <span className='back-button p-2 mt-2'>
-                    <Button onClick={() => history.push({ pathname: '/admin/simulator/topic', state: state.isEdit ? state.simulator_id : state.state })}><Icon source={MobileBackArrowMajor} /></Button>
+                    <Button onClick={() => navigate('/admin/simulator/topic', { state: state.isEdit ? state.simulator_id : state.state })}><Icon source={MobileBackArrowMajor} /></Button>
                 </span>
                 <div className='p-2 mx-2'>
                     <div className='py-2 fs-3 text-center'><h1>{state?.isEdit ? "Edit" : "Add"} simulator topic</h1></div>
@@ -401,39 +400,39 @@ const AddsimulatorTopic = () => {
                                 </DropZone>  </div></div>}
 
                         {formik.values.simulator_Type == '4' &&
-                        <div className='row justify-content-center'>
-                            <div className='col-sm-6 mt-2'>
-                                <label>Add Video Link</label>
-                                {formik.values.scrb?.map((item, index) => {
-                                    return (
-                                        <>
-                                            <div class="row d-flex justify-content-center mt-2">
-                                                <div className='col-sm-10 mt-2'>
-                                                    <TextField
-                                                        value={formik.values.scrb[index]}
-                                                        onChange={(value) => formik.setFieldValue(`scrb.${index}`, value)}
-                                                        error={formik.errors.scrb && formik.errors.scrb[index] && formik.touched.scrb && formik.touched.scrb[index] ? formik.errors.scrb[index] : ''} />
-                                                </div>
-                                                <div className='col-sm-2 mt-2'>
-                                                    <div className='sl-add-delete-icon cursor-pointer'>
-                                                        <div className='cursor-pointer' onClick={() => AddRow(2)} style={{ pointerEvents: (formik.values.scrb).length >= '3' && 'none' }}>
-                                                            <Icon
-                                                                source={CirclePlusMajor}
-                                                                color="base"
-                                                            /></div>
-                                                        <div className='cursor-pointer' aria-disabled={true} onClick={() => deleteRow(index, 2)}>
-                                                            <Icon
-                                                                source={DeleteMajor}
-                                                                color="critical"
-                                                            /></div>
+                            <div className='row justify-content-center'>
+                                <div className='col-sm-6 mt-2'>
+                                    <label>Add Video Link</label>
+                                    {formik.values.scrb?.map((item, index) => {
+                                        return (
+                                            <>
+                                                <div class="row d-flex justify-content-center mt-2">
+                                                    <div className='col-sm-10 mt-2'>
+                                                        <TextField
+                                                            value={formik.values.scrb[index]}
+                                                            onChange={(value) => formik.setFieldValue(`scrb.${index}`, value)}
+                                                            error={formik.errors.scrb && formik.errors.scrb[index] && formik.touched.scrb && formik.touched.scrb[index] ? formik.errors.scrb[index] : ''} />
+                                                    </div>
+                                                    <div className='col-sm-2 mt-2'>
+                                                        <div className='sl-add-delete-icon cursor-pointer'>
+                                                            <div className='cursor-pointer' onClick={() => AddRow(2)} style={{ pointerEvents: (formik.values.scrb).length >= '3' && 'none' }}>
+                                                                <Icon
+                                                                    source={CirclePlusMajor}
+                                                                    color="base"
+                                                                /></div>
+                                                            <div className='cursor-pointer' aria-disabled={true} onClick={() => deleteRow(index, 2)}>
+                                                                <Icon
+                                                                    source={DeleteMajor}
+                                                                    color="critical"
+                                                                /></div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </>
-                                    )
-                                })}
-                            </div>
-                        </div>}
+                                            </>
+                                        )
+                                    })}
+                                </div>
+                            </div>}
                         {formik.values.simulator_Type == '3' && <div className='row justify-content-center'>
                             <div className='col-sm-6 mt-2'>
                                 <TextField
@@ -514,18 +513,18 @@ const AddsimulatorTopic = () => {
 
                                                 <div class="col-lg-2 col-md-6">
                                                     {formik.values.slider_type == '1' &&
-                                                    <div className='sl-add-delete-icon cursor-pointer'>
-                                                        <div className='cursor-pointer' onClick={() => AddRow()} style={{ pointerEvents: (formik.values.left_min).length >= '3' && 'none' }}>
-                                                            <Icon
-                                                                source={CirclePlusMajor}
-                                                                color="base"
-                                                            /></div>
-                                                        <div className='cursor-pointer' aria-disabled={true} onClick={() => deleteRow(index)}>
-                                                            <Icon
-                                                                source={DeleteMajor}
-                                                                color="critical"
-                                                            /></div>
-                                                    </div>}</div>
+                                                        <div className='sl-add-delete-icon cursor-pointer'>
+                                                            <div className='cursor-pointer' onClick={() => AddRow()} style={{ pointerEvents: (formik.values.left_min).length >= '3' && 'none' }}>
+                                                                <Icon
+                                                                    source={CirclePlusMajor}
+                                                                    color="base"
+                                                                /></div>
+                                                            <div className='cursor-pointer' aria-disabled={true} onClick={() => deleteRow(index)}>
+                                                                <Icon
+                                                                    source={DeleteMajor}
+                                                                    color="critical"
+                                                                /></div>
+                                                        </div>}</div>
                                             </div>
                                         </>
                                     )
@@ -555,18 +554,18 @@ const AddsimulatorTopic = () => {
                             </div>
                         </div>
                         {formik.values.final_Result_enabled &&
-                        <div className='row justify-content-center'>
-                            <div className='col-sm-6 mt-2'>
-                                <Select
-                                    label="Final result"
-                                    options={query_Result_options}
-                                    placeholder="Please select query result"
-                                    onChange={(value) => formik.setFieldValue('query_Result', value)}
-                                    value={formik.values.query_Result}
-                                    error={formik.errors.query_Result && formik.touched.query_Result ? formik.errors.query_Result : ''}
-                                />
-                            </div>
-                        </div>}
+                            <div className='row justify-content-center'>
+                                <div className='col-sm-6 mt-2'>
+                                    <Select
+                                        label="Final result"
+                                        options={query_Result_options}
+                                        placeholder="Please select query result"
+                                        onChange={(value) => formik.setFieldValue('query_Result', value)}
+                                        value={formik.values.query_Result}
+                                        error={formik.errors.query_Result && formik.touched.query_Result ? formik.errors.query_Result : ''}
+                                    />
+                                </div>
+                            </div>}
                         {
                             formik.values.simulator_Type == "2" && <>
                                 <div className='row justify-content-center'>

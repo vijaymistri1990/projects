@@ -1,14 +1,14 @@
 import { Button, Icon, LegacyCard, TextField } from '@shopify/polaris'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
-import * as Yup from "yup"; 
-import { ApiCall, GetApiCall } from '../../helper/axios';
-import { useHistory, useLocation } from 'react-router-dom';
+import * as Yup from "yup";
+import { ApiCall } from '../../helper/axios';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { MobileBackArrowMajor } from '@shopify/polaris-icons';
 import { getCookies } from '../../helper/commonFunctions';
 
 const Createuser = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const { state } = useLocation();
     const [loader, setLoader] = useState(false)
 
@@ -48,7 +48,7 @@ const Createuser = () => {
         const res = await ApiCall('PUT', '/update-user', data)
         let response = res?.data
         if (response?.statusCode === 200 && response?.status == "success") {
-            history.push('/admin/user')
+            navigate('/admin/user')
         }
         setLoader(false)
     }
@@ -60,10 +60,10 @@ const Createuser = () => {
             password: values.passWord,
             name: values.name
         }
-        const res = await ApiCall('POST', `/new-user`, data, [])
+        const res = await ApiCall('POST', '/new-user', data)
         let response = res?.data
         if (response?.statusCode === 200 && response?.status == "success") {
-            history.push('/admin/user')
+            navigate('/admin/user')
         }
         setLoader(false)
     }
@@ -89,20 +89,17 @@ const Createuser = () => {
     }, [state])
 
     const handleEditPassword = (state) => {
-        history.push({
-            pathname: '/admin/user/password',
-            state: state
-        })
+        navigate('/admin/user/password', { state: state })
     }
 
     useEffect(() => {
         let data = getCookies('userData');
         if (data == null) {
-            history.push("/login");
+            navigate("/login");
         } else {
             let user = JSON.parse(data)?.user
             if (user == "0") {
-                history.push("/topic-list");
+                navigate("/topic-list");
             }
         }
     }, [])
@@ -113,7 +110,7 @@ const Createuser = () => {
             <LegacyCard>
                 <div>
                     <span className='back-button p-2 mt-2'>
-                        <Button onClick={() => history.push("/admin/user")}><Icon source={MobileBackArrowMajor} /></Button>
+                        <Button onClick={() => navigate("/admin/user")}><Icon source={MobileBackArrowMajor} /></Button>
                     </span>
                 </div>
                 <div className='p-2 mx-2'>

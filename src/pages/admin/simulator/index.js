@@ -1,6 +1,6 @@
 import { Button, LegacyCard, IndexTable, Text, Pagination, Icon, Toast } from '@shopify/polaris'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ToggleSwitch from '../../../components/ToggleSwitch';
 import { ApiCall, GetApiCall } from '../../../helper/axios';
 import { EditMinor, DeleteMinor } from '@shopify/polaris-icons';
@@ -9,7 +9,7 @@ import { getCookies } from '../../../helper/commonFunctions';
 import Skeleton from "../../../components/Skeleton";
 
 const Simulator = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const [allSimulator, setAllSimulators] = useState([])
     const [page, setpage] = useState(1)
     const [totalData, setTotalData] = useState(0)
@@ -24,11 +24,11 @@ const Simulator = () => {
     useEffect(() => {
         let data = getCookies('userData');
         if (data == null) {
-            history.push("/login");
+            navigate("/login");
         } else {
             let user = JSON.parse(data)?.user
             if (user == "0") {
-                history.push("/topic-list");
+                navigate("/topic-list");
             }
         }
     }, [])
@@ -61,10 +61,7 @@ const Simulator = () => {
     }, [allSimulator])
 
     const simulatorEdit = async (id) => {
-        history.push({
-            pathname: '/admin/simulator/topic',
-            state: id
-        })
+        navigate('/admin/simulator/topic', { state: id })
     }
 
     const handleToggleChange = async (id) => {
@@ -107,8 +104,7 @@ const Simulator = () => {
     }
 
     const handleEdit = (item) => {
-        history.push({
-            pathname: '/admin/add-simulator',
+        navigate('/admin/add-simulator', { 
             state: { isEdit: true, query: item.query, locale: item.locale, user_location: item.location, longtitude: item.longtitude, latitude: item.latitude, result: item.result, id: item.id, result_show : item.result_show }
         })
     }
@@ -146,7 +142,7 @@ const Simulator = () => {
             {
                 loader ? <Skeleton /> : <>
                     <div className="sl-add-button">
-                        <Button onClick={() => history.push("/admin/add-simulator")}>
+                        <Button onClick={() => navigate("/admin/add-simulator")}>
                             Add Simulator
                         </Button>
                     </div>

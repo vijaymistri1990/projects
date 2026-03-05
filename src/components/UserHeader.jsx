@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, } from 'reactstrap';
 import tsLogo from '../assets/img/slc-logo-preview.png'
 import Dropdowns from './Dropdown';
 import { removeCookies } from '../helper/commonFunctions';
 
 const UserHeader = () => {
-    let history = useHistory();
+    let navigate = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [activeLink, setActiveLink] = useState(0);
 
@@ -15,7 +15,7 @@ const UserHeader = () => {
         // localStorage.removeItem("userData");
         removeCookies('userData')
         removeCookies('token')
-        history.push('/login')
+        navigate('/login')
     }
 
     useEffect(() => {
@@ -46,13 +46,13 @@ const UserHeader = () => {
                 <nav>
                     <ul>
                         <li className={activeLink === 0 ? 'active' : ''}>
-                            <span onClick={() => { setActiveLink(0); history.push('/topic-list') }}>Simulator</span>
+                            <span onClick={() => { setActiveLink(0); navigate('/topic-list') }}>Simulator</span>
                         </li>
                         <li className={activeLink === 1 ? 'active' : ''}>
-                            <span onClick={() => { setActiveLink(1); history.push('/performance-list') }}>Performance</span>
+                            <span onClick={() => { setActiveLink(1); navigate('/performance-list') }}>Performance</span>
                         </li>
                         <li className={activeLink === 2 ? 'active' : ''}>
-                            <span onClick={() => { setActiveLink(2); history.push('/work-hour-list') }}>WorkHour</span>
+                            <span onClick={() => { setActiveLink(2); navigate('/work-hour-list') }}>WorkHour</span>
                         </li>
                     </ul>
                 </nav>

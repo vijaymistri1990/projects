@@ -1,6 +1,6 @@
 import { Button, LegacyCard, EmptyState } from '@shopify/polaris'
 import React, { useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { ApiCall, GetApiCall } from '../../../helper/axios';
 import { Spinner, InputGroup } from 'reactstrap';
 import QRCode from "react-qr-code";
@@ -17,7 +17,7 @@ import { getCookies } from '../../../helper/commonFunctions';
 import Skeleton from '../../../components/Skeleton';
 
 const Topiclist = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const { state } = useLocation();
     let [simulatorData, setSimulatorData] = useState([]);
     let [allSimulatorData, setAllSimulatorData] = useState([]);
@@ -42,11 +42,11 @@ const Topiclist = () => {
     useEffect(() => {
         let data = getCookies('userData');
         if (data == null) {
-            history.push("/login");
+            navigate("/login");
         } else {
             let user = JSON.parse(data)?.user
             if (user == "0") {
-                history.push("/topic-list");
+                navigate("/topic-list");
             }
         }
     }, [])
@@ -143,8 +143,7 @@ const Topiclist = () => {
 
     const simulatorTopicEdit = async (id, simulator_id) => {
         setLoader(true)
-        history.push({
-            pathname: '/admin/simulator/add-topic',
+        navigate('/admin/simulator/add-topic', {
             state: { id: id, simulator_id: simulator_id, isEdit: true }
         })
         setLoader(false)
@@ -166,12 +165,11 @@ const Topiclist = () => {
             <div className='d-flex mt-2 align-items-baseline'>
                 <div>
                     <span className='back-button'>
-                        <Button onClick={() => history.push('/admin/simulator')}><Icon source={MobileBackArrowMajor} /></Button>
+                        <Button onClick={() => navigate('/admin/simulator')}><Icon source={MobileBackArrowMajor} /></Button>
                     </span>
                 </div>
                 <div className="mt-2 sl-add-button my-3 mx-2 ">
-                    <Button onClick={() => history.push({
-                        pathname: '/admin/simulator/add-topic',
+                    <Button onClick={() => navigate('/admin/simulator/add-topic', {
                         state: { state: state, slot: locaton }
                     })} disabled={allSimulatorData?.length >= 10 ? true : false}>
                         Add simulator topic
@@ -494,8 +492,7 @@ const Topiclist = () => {
                                         image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
                                     >
                                         <div className="mt-2 sl-add-button my-3">
-                                            <Button onClick={() => history.push({
-                                                pathname: '/admin/simulator/add-topic',
+                                            <Button onClick={() => navigate('/admin/simulator/add-topic', {
                                                 state: state
                                             })} disabled={allSimulatorData?.length >= 10 ? true : false}>
                                                 Add simulator topic
