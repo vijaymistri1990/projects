@@ -63,7 +63,10 @@ const Signin = () => {
         setCookie('userData', JSON.stringify(response.data.user_data))
         setCookie('token', response.data.token) // Don't double stringify
 
+        console.log("Login successful!"); // Debug log
+        console.log("Token stored:", response.data.token.substring(0, 20) + '...'); // Debug log
         console.log("User type:", response.data.user_data.user); // Debug log
+        console.log("Token in localStorage:", localStorage.getItem('token')?.substring(0, 20) + '...'); // Debug log
 
         // Redirect based on user type
         if (response.data.user_data.user == 1) {

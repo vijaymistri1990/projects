@@ -21,7 +21,7 @@ const Createuser = () => {
     let validationSchema = Yup.object().shape({
         name: Yup.string().required('required'),
         userName: Yup.string().required('required'),
-        // passWord: Yup.string().required('required'),
+        passWord: state ? Yup.string() : Yup.string().required('required'),
     })
 
     const formik = useFormik({
@@ -60,10 +60,20 @@ const Createuser = () => {
             password: values.passWord,
             name: values.name
         }
-        const res = await ApiCall('POST', '/new-user', data)
-        let response = res?.data
-        if (response?.statusCode === 200 && response?.status == "success") {
-            navigate('/admin/user')
+        console.log('Attempting to create user with data:', data);
+        console.log('API endpoint: /new-user');
+
+        try {
+            const res = await ApiCall('POST', '/new-user', data)
+            console.log('API Response:', res);
+            let response = res?.data
+            if (response?.statusCode === 200 && response?.status == "success") {
+                navigate('/admin/user')
+            } else {
+                console.error('API Error:', response);
+            }
+        } catch (error) {
+            console.error('Request failed:', error);
         }
         setLoader(false)
     }
