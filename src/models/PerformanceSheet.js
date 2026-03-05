@@ -23,6 +23,12 @@ const PerformanceSheet = sequelize.define('sm_perfomance_sheet', {
             key: 'id'
         }
     },
+    month: {
+        type: DataTypes.INTEGER
+    },
+    result: {
+        type: DataTypes.STRING(255)
+    },
     score: {
         type: DataTypes.INTEGER
     },

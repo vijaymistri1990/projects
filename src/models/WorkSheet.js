@@ -23,6 +23,12 @@ const WorkSheet = sequelize.define('sm_work_sheet', {
             key: 'id'
         }
     },
+    month: {
+        type: DataTypes.INTEGER
+    },
+    result: {
+        type: DataTypes.STRING(255)
+    },
     worksheet_data: {
         type: DataTypes.JSONB
     },

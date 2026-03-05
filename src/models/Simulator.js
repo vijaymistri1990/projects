@@ -7,6 +7,9 @@ const Simulator = sequelize.define('sm_simulator', {
         primaryKey: true,
         autoIncrement: true
     },
+    query: {
+        type: DataTypes.STRING(255)
+    },
     title: {
         type: DataTypes.STRING(255),
         allowNull: false
@@ -37,6 +40,9 @@ const Simulator = sequelize.define('sm_simulator', {
     result_show: {
         type: DataTypes.INTEGER,
         allowNull: true
+    },
+    result: {
+        type: DataTypes.INTEGER
     },
     created_at: {
         type: DataTypes.DATE,

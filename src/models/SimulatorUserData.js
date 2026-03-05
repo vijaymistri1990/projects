@@ -23,6 +23,24 @@ const SimulatorUserData = sequelize.define('sm_simulator_user_data', {
             key: 'id'
         }
     },
+    simulator_result: {
+        type: DataTypes.INTEGER
+    },
+    type: {
+        type: DataTypes.INTEGER
+    },
+    sxs_outcome: {
+        type: DataTypes.INTEGER
+    },
+    nm_outcome: {
+        type: DataTypes.INTEGER
+    },
+    simulator_comment: {
+        type: DataTypes.TEXT
+    },
+    simulator_topic_result: {
+        type: DataTypes.TEXT
+    },
     data: {
         type: DataTypes.JSONB
     },
