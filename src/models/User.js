@@ -21,6 +21,11 @@ const User = sequelize.define('sm_users', {
         type: DataTypes.STRING(255),
         allowNull: false
     },
+    type: {
+        type: DataTypes.STRING(1),
+        allowNull: false,
+        defaultValue: '0'  // '0' = normal user, '1' = admin
+    },
     created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW

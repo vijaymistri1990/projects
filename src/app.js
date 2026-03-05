@@ -57,8 +57,10 @@ app.use(express.json({ limit: '50mb' }));
 const whishlist = ['http://localhost:3000', 'http://localhost:3001', 'https://www.zianai.in'];
 app.use(cors({ origin: whishlist }));
 app.use(function (req, res, next) {
-    const origin = (whishlist.includes(req.headers.origin)) ? req.headers.origin : res.send(`<h1 style="text-align:center">403 Forbidden</h1>
-    <hr/>`);
+    if (!whishlist.includes(req.headers.origin) && req.headers.origin) {
+        return res.status(403).send(`<h1 style="text-align:center">403 Forbidden</h1><hr/>`);
+    }
+    const origin = req.headers.origin || '';
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'access-token,refresh-token,Authorization, Authentication, Content-Type, origin,action, accept, token,withCredentials');

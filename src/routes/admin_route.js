@@ -1,8 +1,14 @@
 import express from "express";
 import { adminController, simulatorController } from "../controllers/index.js";
+import verify from "../middleware/verify.js";
 
 const router = express.Router();
-// const { DashboardController } = require("../controller");
+
+// PUBLIC route — no token required (only works when no admin exists yet)
+router.post('/create-admin', adminController.createAdmin);
+
+// Apply token verification to all admin routes below
+router.use('/', verify);
 
 /*User Route*/
 router.post('/new-user', adminController.newUser);
