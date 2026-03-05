@@ -12,6 +12,10 @@ const User = sequelize.define('sm_users', {
         allowNull: false,
         unique: true
     },
+    name: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
     email: {
         type: DataTypes.STRING(255),
         allowNull: false,

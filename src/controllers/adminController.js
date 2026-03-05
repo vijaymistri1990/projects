@@ -10,6 +10,7 @@ import db_functions from '../helper/db_functions.js';
 // Import models
 import {
     User,
+    Simulator,
     SimulatorUserData,
     PerformanceSheet,
     WorkSheet
@@ -35,9 +36,10 @@ const newUser = async (req, res) => {
                 // Encrypt password
                 reqData.password = db_functions.getEncryptDecryptData('encrypt', reqData.password);
 
-                // Create new user
+                // Create new user - map frontend fields to database fields
                 let insert_user = await User.create({
-                    username: reqData.user_name,
+                    username: reqData.user_name,  // Map user_name to username
+                    name: reqData.name,  // Add name field
                     email: reqData.email || `${reqData.user_name}@example.com`, // Default email if not provided
                     password: reqData.password,
                     type: reqData.type || '0'  // '0' = normal user, '1' = admin
@@ -45,30 +47,44 @@ const newUser = async (req, res) => {
 
                 let user_id = insert_user.id;
 
-                // Create performance sheet records for 12 months
-                let performanceData = [];
-                let worksheetData = [];
+                // Check if any simulators exist before creating performance/worksheet records
+                const simulators = await Simulator.findAll({
+                    attributes: ['id'],
+                    transaction
+                });
 
-                for (let month = 1; month <= 12; month++) {
-                    performanceData.push({
-                        user_id: user_id,
-                        simulator_id: 1, // Default simulator_id, adjust as needed
-                        score: null,
-                        performance_data: { month: month }
-                    });
+                // Only create performance and worksheet records if simulators exist
+                if (simulators && simulators.length > 0) {
+                    // Get the first simulator ID
+                    const firstSimulatorId = simulators[0].id;
 
-                    worksheetData.push({
-                        user_id: user_id,
-                        simulator_id: 1, // Default simulator_id, adjust as needed
-                        worksheet_data: { month: month }
-                    });
+                    // Create performance sheet records for 12 months
+                    let performanceData = [];
+                    let worksheetData = [];
+
+                    for (let month = 1; month <= 12; month++) {
+                        performanceData.push({
+                            user_id: user_id,
+                            simulator_id: firstSimulatorId,
+                            score: null,
+                            performance_data: { month: month }
+                        });
+
+                        worksheetData.push({
+                            user_id: user_id,
+                            simulator_id: firstSimulatorId,
+                            worksheet_data: { month: month }
+                        });
+                    }
+
+                    // Bulk create performance and worksheet records
+                    await Promise.all([
+                        PerformanceSheet.bulkCreate(performanceData, { transaction }),
+                        WorkSheet.bulkCreate(worksheetData, { transaction })
+                    ]);
+                } else {
+                    console.log('No simulators found. Skipping performance sheet and worksheet creation.');
                 }
-
-                // Bulk create performance and worksheet records
-                await Promise.all([
-                    PerformanceSheet.bulkCreate(performanceData, { transaction }),
-                    WorkSheet.bulkCreate(worksheetData, { transaction })
-                ]);
 
                 await transaction.commit();
                 handleSuccess(statusCode.OK, en.DATA_FETCH_SUCCESSFULLY, [], res);
@@ -242,6 +258,7 @@ const updateUser = async (req, res) => {
                     let [updateCount] = await User.update(
                         {
                             username: reqData.user_name,
+                            name: reqData.name,  // Add name field
                             email: reqData.email || checkExistUser.email, // Keep existing email if not provided
                             ...(reqData.type !== undefined && { type: reqData.type }), // Update type if provided
                             updated_at: new Date()
