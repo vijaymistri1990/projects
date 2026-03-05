@@ -158,7 +158,7 @@ const Createuser = () => {
                                     onChange={(value) => formik.setFieldValue('passWord', value)}
                                     placeholder="Please enter Password"
                                     autoComplete="off"
-                                    suffix={<div className='cursor-pointer' onClick={() => randomString()}>Autogenerate password</div>}
+                                    suffix={<div className='tw-cursor-pointer' onClick={() => randomString()}>Autogenerate password</div>}
                                     type="password"
                                     error={formik.errors.passWord && formik.touched.passWord ? formik.errors.passWord : ''}
                                 />

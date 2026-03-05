@@ -123,7 +123,7 @@ const Signin = () => {
                   value={formik.values.userName}
                   required
                 />
-                <p style={{ color: 'red' }}>{formik.errors.userName && formik.touched.userName ? formik.errors.userName : ''}</p>
+                <p className="tw-text-red-500">{formik.errors.userName && formik.touched.userName ? formik.errors.userName : ''}</p>
               </div>
               <div className="input-field">
                 <label htmlFor="password" className="input-label" >
@@ -141,7 +141,7 @@ const Signin = () => {
                   onKeyDown={onKeyDown}
                   required
                 />
-                <p style={{ color: 'red' }}> {formik.errors.password && formik.touched.password ? formik.errors.password : ''}</p>
+                <p className="tw-text-red-500"> {formik.errors.password && formik.touched.password ? formik.errors.password : ''}</p>
               </div>
               <div className="btn-submit">
                 <Button type="submit" onClick={() => formik.handleSubmit()} loading={loader}>Sign in</Button>

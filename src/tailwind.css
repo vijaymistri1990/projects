@@ -1,0 +1,4 @@
+/* Tailwind CSS - Safe mode with tw- prefix */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -75,13 +75,13 @@ const User = () => {
       <IndexTable.Cell>{password}</IndexTable.Cell>
       <IndexTable.Cell>{type == "0" ? "User" : "Admin"}</IndexTable.Cell>
       <IndexTable.Cell>
-        <div className="d-inline-flex p-2">
-          <div className="px-2 cursor-pointer" onClick={() => handleEdit({
+        <div className="tw-flex tw-items-center tw-gap-4 tw-py-2 tw-px-3">
+          <div className="tw-cursor-pointer tw-p-1 hover:tw-bg-gray-100 tw-rounded" onClick={() => handleEdit({
             user_name: username,
             name: name,
             id: id
           })}><Icon source={EditMinor} color="base" /></div>
-          <div className="cursor-pointer" onClick={() => handleDeletePopUp(id)}> <Icon source={DeleteMinor} color="critical" /></div>
+          <div className="tw-cursor-pointer tw-p-1 hover:tw-bg-gray-100 tw-rounded" onClick={() => handleDeletePopUp(id)}> <Icon source={DeleteMinor} color="critical" /></div>
         </div>
       </IndexTable.Cell>
     </IndexTable.Row>

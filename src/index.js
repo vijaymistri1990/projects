@@ -6,6 +6,7 @@ import "./assets/css/app.css";
 import "./assets/css/bootstrap-grid.min.css";
 import "./assets/icons/boxicons-2/css/boxicons.min.css";
 import '@shopify/polaris/build/esm/styles.css';
+import "./tailwind.css"; // Tailwind CSS with tw- prefix
 import { AppProvider, Frame } from '@shopify/polaris';
 import enTranslations from '@shopify/polaris/locales/en.json';
 
