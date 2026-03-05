@@ -18,6 +18,26 @@ const Simulator = sequelize.define('sm_simulator', {
         type: DataTypes.INTEGER,
         defaultValue: 1
     },
+    locale: {
+        type: DataTypes.STRING(50),
+        allowNull: true
+    },
+    location: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+    latitude: {
+        type: DataTypes.STRING(50),
+        allowNull: true
+    },
+    longtitude: {
+        type: DataTypes.STRING(50),
+        allowNull: true
+    },
+    result_show: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
     created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
