@@ -18,9 +18,8 @@ const Dropdown = (props) => {
   return (
     <div className="dropdown">
       <button
-        className={`dropdown-toggle ${
-          props.icon ? "toggle-icon" : "toggle-btn"
-        } `}
+        className={`dropdown-toggle ${props.icon ? "toggle-icon" : "toggle-btn"
+          } `}
         ref={toggleRef}
       >
         {props.icon ? <i className={props.icon}></i> : ""}
@@ -29,7 +28,9 @@ const Dropdown = (props) => {
         ) : (
           ""
         )}
-        {props.avatar ? (
+        {props.customAvatar ? (
+          props.customAvatar
+        ) : props.avatar ? (
           <div className="dropdown-toggle-avatar">
             <img
               src={props.avatar}
