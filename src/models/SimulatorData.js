@@ -66,7 +66,7 @@ const SimulatorData = sequelize.define('sm_simulator_data', {
     },
     topic_name: {
         type: DataTypes.STRING(255),
-        allowNull: false
+        allowNull: true
     },
     content: {
         type: DataTypes.TEXT
