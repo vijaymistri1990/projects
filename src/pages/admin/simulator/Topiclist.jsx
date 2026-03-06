@@ -53,7 +53,7 @@ const Topiclist = () => {
 
     const GetSimulatorData = async () => {
         setLoading(true)
-        let res = await GetApiCall("GET", `/simulator-topics-list?simulator_id=${state?.state ? state.state : state}`)
+        let res = await GetApiCall(`/simulator-topics-list?simulator_id=${state?.state ? state.state : state}`)
         if (res.data.status === 'success' && res.data.statusCode === 200) {
             const finalData = res?.data?.data;
             // let mergeData = [];
@@ -182,9 +182,10 @@ const Topiclist = () => {
                         <div className='row query-dupes'>
                             {allSimulatorData && allSimulatorData.length ?
                                 allSimulatorData.map((item, index) => {
-                                    let result_data = (item && item.slider_result_json && item.slider_result_json !== '') ? JSON.parse(item.slider_result_json) : [];
-                                    let meta_data = (item && item.link_meta && item.link_meta !== '') ? JSON.parse(item.link_meta) : {};
-                                    let youtube_json = (item && item.youtube_json && item.youtube_json !== '') ? JSON.parse(item.youtube_json) : [];
+                                    let result_data = (item && item.slider_result_json) ? (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json) : [];
+                                    let meta_data = (item && item.link_meta) ? (typeof item.link_meta === 'string' ? JSON.parse(item.link_meta) : item.link_meta) : {};
+                                    let youtube_json = (item && item.youtube_json) ? (typeof item.youtube_json === 'string' ? JSON.parse(item.youtube_json) : item.youtube_json) : [];
+                                    let questions_data = (item && item.questions_json) ? (typeof item.questions_json === 'string' ? JSON.parse(item.questions_json) : item.questions_json) : null;
                                     return (
                                         <div className='col-sm-6' key={index} >
                                             <div className='query-content py-3'>
@@ -223,43 +224,43 @@ const Topiclist = () => {
                                                                 <div className='simulator-type-2'>
                                                                     <p className='query-description'>{Object.keys(meta_data).length ? meta_data.ogDescription : ''}</p>
                                                                     <hr className='hr-border-bottom' />
-                                                                    <div className={`horizontal-quetion-bar ${item.question_type == 1 ? 'd-flex justify-content-between gap-2' : ""}`}>
-                                                                        {item.questions_json && item.questions_json !== "" ? JSON.parse(item.questions_json) ?
-                                                                            JSON.parse(item.questions_json).map((data, i) => {
-                                                                                if (item.question_type == 0) {
-                                                                                    return (
-                                                                                        <div key={i}>
-                                                                                            <div className='verticle-quetion-bar d-flex justify-content-between'>
-                                                                                                <div className='d-block'>
-                                                                                                    <p>{data.questions}</p>
-                                                                                                    <p>{data.date}</p>
+                                                                        <div className={`horizontal-quetion-bar ${item.question_type == 1 ? 'd-flex justify-content-between gap-2' : ""}`}>
+                                                                            {questions_data ?
+                                                                                questions_data.map((data, i) => {
+                                                                                    if (item.question_type == 0) {
+                                                                                        return (
+                                                                                            <div key={i}>
+                                                                                                <div className='verticle-quetion-bar d-flex justify-content-between'>
+                                                                                                    <div className='d-block'>
+                                                                                                        <p>{data.questions}</p>
+                                                                                                        <p>{data.date}</p>
+                                                                                                    </div>
+                                                                                                    <div className='d-flex align-items-center'>
+                                                                                                        <Icon source={ChevronRightMinor} color="base" />
+                                                                                                    </div>
                                                                                                 </div>
-                                                                                                <div className='d-flex align-items-center'>
-                                                                                                    <Icon source={ChevronRightMinor} color="base" />
+                                                                                                <hr className='hr-border-bottom' />
+                                                                                            </div>
+                                                                                        )
+                                                                                    } else {
+                                                                                        return (
+                                                                                            <div key={i}>
+                                                                                                <div className='horizontal-quetions w-100'>
+                                                                                                    <div className='d-flex'>
+                                                                                                        {i == 0 && <div className='d-flex'>
+                                                                                                            <Icon source={CircleTickMinor} color="primary" />
+                                                                                                            <span style={{ color: 'rgb(0 128 96)' }}>Top answer - &nbsp;</span>
+                                                                                                        </div>}
+                                                                                                        <span className='votes'>{data.vote} votes</span>
+                                                                                                    </div>
+                                                                                                    <p className='overflow-questions'>{data.questions}</p>
                                                                                                 </div>
                                                                                             </div>
-                                                                                            <hr className='hr-border-bottom' />
-                                                                                        </div>
-                                                                                    )
-                                                                                } else {
-                                                                                    return (
-                                                                                        <div key={i}>
-                                                                                            <div className='horizontal-quetions w-100'>
-                                                                                                <div className='d-flex'>
-                                                                                                    {i == 0 && <div className='d-flex'>
-                                                                                                        <Icon source={CircleTickMinor} color="primary" />
-                                                                                                        <span style={{ color: 'rgb(0 128 96)' }}>Top answer - &nbsp;</span>
-                                                                                                    </div>}
-                                                                                                    <span className='votes'>{data.vote} votes</span>
-                                                                                                </div>
-                                                                                                <p className='overflow-questions'>{data.questions}</p>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    )
-                                                                                }
-                                                                            })
-                                                                            : "" : ''}
-                                                                    </div>
+                                                                                        )
+                                                                                    }
+                                                                                })
+                                                                                : ''}
+                                                                        </div>
                                                                 </div>
                                                                 : item.simulator_type == 3 ?
                                                                     <div className='simulator-type-3'>
