@@ -8,6 +8,7 @@ router.post('/sign-in', userController.signIn);
 
 router.get('/simulator-topic-list', verify, userController.simulatorTopicsList);
 router.get('/simulator-topic-data', verify, userController.simulatorTopicsData);
+router.get('/simulators-with-data', verify, userController.simulatorsWithData);
 router.post('/simulator-topic-sub-data', verify, userController.simulatorTopicsSubData);
 router.delete('/simulator-reset', verify, userController.simulatorTopicsReset);
 

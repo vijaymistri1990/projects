@@ -15,6 +15,7 @@ import {
   SimulatorUserData,
   PerformanceSheet,
   WorkSheet,
+  sequelize,
 } from "../models/index.js";
 
 const signIn = async (req, res) => {
@@ -160,6 +161,13 @@ const simulatorTopicsData = async (req, res) => {
   let { status_code_config: statusCode, en_message_config: en } = config;
   let reqData = req.query;
   try {
+    console.log('simulatorTopicsData called with:', {
+      user_id: res.locals.user_id,
+      user_name: res.locals.user_name,
+      simulator_id: reqData?.simulator_id,
+      reqData: reqData
+    });
+
     if (
       common.checkValues(res.locals.user_id) &&
       common.checkValues(res.locals.user_name) &&
@@ -168,10 +176,13 @@ const simulatorTopicsData = async (req, res) => {
       let user_id = res.locals.user_id;
       let simulator_id = reqData?.simulator_id;
 
+      console.log('Processing request for simulator_id:', simulator_id, 'user_id:', user_id);
+
       // Use Sequelize to get simulator data
       let simulator_data = await Simulator.findOne({
         where: { id: simulator_id },
       });
+      console.log('Simulator data found:', simulator_data ? 'Yes' : 'No', simulator_data?.id);
 
       // Get all simulator IDs
       let simulator_ids = await Simulator.findAll({
@@ -180,11 +191,13 @@ const simulatorTopicsData = async (req, res) => {
       });
 
       let simulator_id_data = simulator_ids.map((item) => item.id);
+      console.log('Available simulator IDs:', simulator_id_data);
 
       // Get simulator topics data
       let simulator_topics_data = await SimulatorData.findAll({
         where: { simulator_id: simulator_id },
       });
+      console.log('Simulator topics data count:', simulator_topics_data.length);
 
       // Get user subscription data
       let user_sub_data = await SimulatorUserData.findAll({
@@ -193,6 +206,7 @@ const simulatorTopicsData = async (req, res) => {
           user_id: user_id,
         },
       });
+      console.log('User subscription data count:', user_sub_data.length);
 
       if (simulator_topics_data.length > 0 && simulator_data) {
         let data = {
@@ -202,9 +216,37 @@ const simulatorTopicsData = async (req, res) => {
           length: simulator_topics_data.length,
           simulator_id_data: simulator_id_data,
         };
+        console.log('Success: Returning data for simulator_id:', simulator_id);
         handleSuccess(statusCode.OK, en.DATA_FETCH_SUCCESSFULLY, data, res);
       } else {
-        handleError(statusCode.BAD_REQUEST, en.ERROR_SOMETHING_WRONG, res);
+        console.log('Error conditions:', {
+          simulator_data_exists: !!simulator_data,
+          simulator_topics_count: simulator_topics_data.length,
+          simulator_id: simulator_id
+        });
+        
+        if (!simulator_data) {
+          console.log('Error: Simulator not found with ID:', simulator_id);
+          handleError(statusCode.BAD_REQUEST, `Simulator with ID ${simulator_id} not found`, res);
+        } else if (simulator_topics_data.length === 0) {
+          console.log('Error: No simulator topics data found for simulator_id:', simulator_id);
+          
+          // Get a list of simulators with data to suggest alternatives
+          const simulatorsWithData = await sequelize.query(`
+            SELECT s.id, s.query, COUNT(sd.id) as data_count
+            FROM sm_simulator s
+            INNER JOIN sm_simulator_data sd ON s.id = sd.simulator_id
+            WHERE s.status = '1'
+            GROUP BY s.id, s.query
+            ORDER BY s.id ASC
+            LIMIT 5
+          `, { type: sequelize.QueryTypes.SELECT });
+          
+          const suggestions = simulatorsWithData.map(s => `ID ${s.id}: "${s.query}"`).join(', ');
+          handleError(statusCode.BAD_REQUEST, `No topics data found for simulator ${simulator_id}. Try these simulators with data: ${suggestions}`, res);
+        } else {
+          handleError(statusCode.BAD_REQUEST, en.ERROR_SOMETHING_WRONG, res);
+        }
       }
     } else {
       handleError(statusCode.BAD_REQUEST, en.ERROR_SOMETHING_WRONG, res);
@@ -431,10 +473,49 @@ const worksheetUpdate = async (req, res) => {
   }
 };
 
+const simulatorsWithData = async (req, res) => {
+  let { status_code_config: statusCode, en_message_config: en } = config;
+  try {
+    if (
+      common.checkValues(res.locals.user_id) &&
+      common.checkValues(res.locals.user_name)
+    ) {
+      console.log('Getting simulators with data for user:', res.locals.user_id);
+
+      // Get simulators that have data
+      const simulatorsWithData = await sequelize.query(`
+        SELECT s.id, s.query, s.locale, s.status, COUNT(sd.id) as data_count
+        FROM sm_simulator s
+        INNER JOIN sm_simulator_data sd ON s.id = sd.simulator_id
+        WHERE s.status = '1'
+        GROUP BY s.id, s.query, s.locale, s.status
+        HAVING COUNT(sd.id) > 0
+        ORDER BY s.id ASC
+      `, { type: sequelize.QueryTypes.SELECT });
+
+      if (simulatorsWithData.length > 0) {
+        let data = {
+          simulators: simulatorsWithData,
+          total_count: simulatorsWithData.length,
+        };
+        handleSuccess(statusCode.OK, en.DATA_FETCH_SUCCESSFULLY, data, res);
+      } else {
+        handleError(statusCode.OK, en.ERROR_NO_DATA_FOUND, res);
+      }
+    } else {
+      handleError(statusCode.BAD_REQUEST, en.ERROR_SOMETHING_WRONG, res);
+    }
+  } catch (error) {
+    console.log("error==============catch==============>", error);
+    handleError(statusCode.BAD_REQUEST, en.ERROR_SOMETHING_WRONG, res);
+  }
+};
+
 export default {
   signIn,
   simulatorTopicsList,
   simulatorTopicsData,
+  simulatorsWithData,
   simulatorTopicsSubData,
   simulatorTopicsReset,
   performanceResultUpdate,

@@ -21,9 +21,10 @@
     "google-search-results-nodejs": "^2.1.0",
     "helmet": "6.0.0",
     "jsonwebtoken": "^8.5.1",
+    "node-fetch": "^3.3.2",
+    "open-graph-scraper": "^5.2.2",
     "pg": "^8.11.3",
-    "sequelize": "^6.35.0",
-    "open-graph-scraper": "^5.2.2"
+    "sequelize": "^6.35.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
