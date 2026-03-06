@@ -107,7 +107,26 @@ const Simulator = () => {
 
     const GetSimulatorData = async (arg = 0) => {
         setLoading(true)
+        
+        // Check if user is authenticated
+        const token = getCookies('token');
+        const userData = getCookies('userData');
+        
+        if (!token || !userData) {
+            console.log('No authentication found, redirecting to login...');
+            navigate('/login');
+            return;
+        }
+        
         let res = await GetUserApiCall('GET', `/simulator-topic-data?simulator_id=${simulator_id}`, header);
+        
+        // Handle authentication errors
+        if (res?.status === 400 || res?.status === 401) {
+            console.log('Authentication error, redirecting to login...');
+            navigate('/login');
+            return;
+        }
+        
         if (res?.data?.status === 'success' && res?.data?.statusCode === 200) {
             const finalData = res?.data?.data.simulator_topics_data;
             const finalSimulatorData = res?.data?.data.simulator_data;
@@ -141,6 +160,24 @@ const Simulator = () => {
             setSimulatorData(finalData);
             setLoading(false)
         } else {
+            console.error('API Error:', res?.data || res);
+            console.log('Response status:', res?.status);
+            console.log('Response data:', res?.data);
+            
+            // Check if it's a "no data found" error and suggest alternatives
+            if (res?.data?.message && res.data.message.includes('No topics data found')) {
+                alert(`Simulator ${simulator_id} has no data. Redirecting to simulator 5 which has data.`);
+                navigate('/simulator/5');
+                return;
+            }
+            
+            // Show user-friendly error message
+            if (res?.data?.message) {
+                alert(`Error: ${res.data.message}`);
+            } else {
+                alert('Failed to load simulator data. Please try again.');
+            }
+            
             setSimulatorData([]);
             setAllSimulatorData([]);
             setSimulatorQueryData({});
@@ -394,12 +431,12 @@ const Simulator = () => {
                                                         </div> : <></>}
                                                         {item.simulator_type == 0 ?
                                                             <div className='simulagtor-type-0'>
-                                                                <a className='query-title' target='_blank' href={`${Object.keys(meta_data).length && meta_data?.ogUrl ? meta_data.ogUrl : meta_data?.requestUrl}`}>{Object.keys(meta_data).length ? meta_data.ogTitle : ''}</a>
+                                                                <a className='query-title' target='_blank' href={`${item.link || (Object.keys(meta_data).length && meta_data?.ogUrl ? meta_data.ogUrl : meta_data?.requestUrl)}`}>{Object.keys(meta_data).length ? meta_data.ogTitle : ''}</a>
                                                                 <p className='query-description'>{Object.keys(meta_data).length ? meta_data.ogDescription : ''}</p>
                                                             </div>
                                                             : item.simulator_type == 1 ?
                                                                 <div className='simulator-type-1'>
-                                                                    <a className='query-title' target='_blank' href={`${Object.keys(meta_data).length ? meta_data.ogUrl : ''}`}>{Object.keys(meta_data).length ? meta_data.ogTitle : ''}</a>
+                                                                    <a className='query-title' target='_blank' href={`${item.link || (Object.keys(meta_data).length ? meta_data.ogUrl : '')}`}>{Object.keys(meta_data).length ? meta_data.ogTitle : ''}</a>
                                                                     <div className='d-flex py-2 align-items-center'>
                                                                         <img className='youtube-video-preview' src={`${Object.keys(meta_data).length ? meta_data?.ogImage?.url : ''}`} />
                                                                         <div className='px-2'>
@@ -416,7 +453,7 @@ const Simulator = () => {
                                                                 </div> : item.simulator_type == 2 ?
                                                                     <div className='simulator-type-2'>
                                                                         <div>
-                                                                            <a className='query-title' target='_blank' href={`${Object.keys(meta_data).length ? meta_data.ogUrl : ''}`}>{Object.keys(meta_data).length ? meta_data.ogTitle : ''}</a>
+                                                                            <a className='query-title' target='_blank' href={`${item.link || (Object.keys(meta_data).length ? meta_data.ogUrl : '')}`}>{Object.keys(meta_data).length ? meta_data.ogTitle : ''}</a>
                                                                         </div>
                                                                         <p className='query-description'>{Object.keys(meta_data).length ? meta_data.ogDescription : ''}</p>
                                                                         <hr className='hr-border-bottom' />
@@ -466,10 +503,10 @@ const Simulator = () => {
                                                                                     <img className='favicon-image' src={Object.keys(meta_data).length ? meta_data.favicon : noContent} />
                                                                                 </div>
                                                                                 <div>
-                                                                                    <cite className='cite-url'>{Object.keys(meta_data).length ? meta_data.ogUrl : ''}</cite>
+                                                                                    <cite className='cite-url'>{item.link || (Object.keys(meta_data).length ? meta_data.ogUrl : '')}</cite>
                                                                                 </div>
                                                                             </div>
-                                                                            <a className='description-query-title' target='_blank' href={`${Object.keys(meta_data).length ? meta_data.ogUrl : ''}`}>{Object.keys(meta_data).length ? meta_data.ogTitle : ''}</a>
+                                                                            <a className='description-query-title' target='_blank' href={`${item.link || (Object.keys(meta_data).length ? meta_data.ogUrl : '')}`}>{Object.keys(meta_data).length ? meta_data.ogTitle : ''}</a>
                                                                         </div> : item.simulator_type == 5 ?
                                                                             <div className='simulator-type-5'>
                                                                                 <div className='d-flex py-2'>
