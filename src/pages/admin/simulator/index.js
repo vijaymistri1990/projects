@@ -39,7 +39,7 @@ const Simulator = () => {
 
     const SimulatorList = async () => {
 
-        let res = await GetApiCall('GET', `/simulator-list?limit=30&page=${page}`)
+        let res = await GetApiCall(`/simulator-list?limit=30&page=${page}`)
         let response = res?.data
         if (response?.statusCode === 200 && response?.status == "success") {
             setAllSimulators(response?.data?.user_data)
@@ -105,7 +105,7 @@ const Simulator = () => {
 
     const handleEdit = (item) => {
         navigate('/admin/add-simulator', { 
-            state: { isEdit: true, query: item.query, locale: item.locale, user_location: item.location, longtitude: item.longtitude, latitude: item.latitude, result: item.result, id: item.id, result_show : item.result_show }
+            state: { isEdit: true, query: item.title, locale: item.locale, user_location: item.location, longtitude: item.longtitude, latitude: item.latitude, result: item.result, id: item.id, result_show : item.result_show }
         })
     }
 
@@ -115,14 +115,23 @@ const Simulator = () => {
             key={item.id}
             position={index}
         >
-            <IndexTable.Cell>{page * 30 - 30 + index + 1} </IndexTable.Cell>
-            <IndexTable.Cell ><spna onClick={() => simulatorEdit(item.id)} className="cursor-pointer">{item.query}</spna> </IndexTable.Cell>
-            <IndexTable.Cell><ToggleSwitch width={30} height={15} handleDiameter={12} checked={togglestate[item.id]} handleChange={() => { handleToggleChange(item.id) }} /> </IndexTable.Cell>
+            <IndexTable.Cell>{page * 30 - 30 + index + 1}</IndexTable.Cell>
             <IndexTable.Cell>
-                <div className="d-inline-flex p-2   ">
-                    <div className=" cursor-pointer px-2" onClick={() => handleEdit(item)}><Icon source={EditMinor} color="base" /></div>
-                    <div className="pl-2 cursor-pointer" onClick={() => handleDeletePopUp(item.id)}> <Icon source={DeleteMinor} color="critical" /></div>
-                </div></IndexTable.Cell>
+                <span onClick={() => simulatorEdit(item.id)} className="cursor-pointer">{item.title || item.query}</span>
+            </IndexTable.Cell>
+            <IndexTable.Cell>
+                <ToggleSwitch width={30} height={15} handleDiameter={12} checked={togglestate[item.id]} handleChange={() => { handleToggleChange(item.id) }} />
+            </IndexTable.Cell>
+            <IndexTable.Cell>
+                <div className="d-flex align-items-center gap-3">
+                    <div className="cursor-pointer" onClick={() => handleEdit(item)}>
+                        <Icon source={EditMinor} color="base" />
+                    </div>
+                    <div className="cursor-pointer" onClick={() => handleDeletePopUp(item.id)}>
+                        <Icon source={DeleteMinor} color="critical" />
+                    </div>
+                </div>
+            </IndexTable.Cell>
         </IndexTable.Row>
     ))
 
@@ -181,7 +190,7 @@ const Simulator = () => {
                                         id: '4',
                                         title: (
                                             <Text fontWeight="bold" as="span">
-                                                <span className='px-3'>Action</span>
+                                                Action
                                             </Text>
                                         ),
                                     }

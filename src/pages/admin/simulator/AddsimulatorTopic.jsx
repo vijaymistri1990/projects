@@ -200,65 +200,97 @@ const AddsimulatorTopic = () => {
 
     const simulatorSave = async (values) => {
         setLoader(true)
-        let resultArr = []
-        values?.Right_max.map((item, index) => {
-            resultArr.push({
-                [`left_${index}_rating_result_max`]: formik.values.left_max[index],
-                [`left_${index}_rating_result_min`]: formik.values.left_min[index],
-                [`right_${index}_rating_result_max`]: formik.values.Right_max[index],
-                [`right_${index}_rating_result_min`]: formik.values.Right_min[index]
-            })
-        })
 
-        let questionArr = []
-        values?.questions?.map((item, index) => {
-            if (values.question_type == "0") {
-                questionArr.push({
-                    questions: formik.values.questions[index],
-                    date: formik.values.date[index]
+        try {
+            let resultArr = []
+            values?.Right_max.map((item, index) => {
+                resultArr.push({
+                    [`left_${index}_rating_result_max`]: formik.values.left_max[index],
+                    [`left_${index}_rating_result_min`]: formik.values.left_min[index],
+                    [`right_${index}_rating_result_max`]: formik.values.Right_max[index],
+                    [`right_${index}_rating_result_min`]: formik.values.Right_min[index]
                 })
-            } else {
-                questionArr.push({
-                    questions: formik.values.questions[index],
-                    vote: formik.values.date[index]
-                })
+            })
+
+            let questionArr = []
+            values?.questions?.map((item, index) => {
+                if (values.question_type == "0") {
+                    questionArr.push({
+                        questions: formik.values.questions[index],
+                        date: formik.values.date[index]
+                    })
+                } else {
+                    questionArr.push({
+                        questions: formik.values.questions[index],
+                        vote: formik.values.date[index]
+                    })
+                }
+            })
+
+            let scrbArr = []
+            values?.scrb?.map((item, index) => {
+                scrbArr.push(formik.values.scrb[index])
+            })
+
+            let data = {
+                simulator_id: state.isEdit ? state.simulator_id : state?.state ? state.state : state,
+                simulator_type: values.simulator_Type,
+                location: values.location,
+                slider_type: values.slider_type,
+                slider_name: values.sccond_slider_type,
+                final_result_show: values.final_Result_enabled ? "1" : "0",
+                final_result: values.final_Result_enabled ? values.query_Result : '',
+                slider_result_json: resultArr,
             }
-        })
 
-        let scrbArr = []
-        values?.scrb?.map((item, index) => {
-            scrbArr.push(formik.values.scrb[index])
-        })
+            // Add conditional fields based on simulator type
+            if (values.simulator_Type != '5' && values.simulator_Type != '4') {
+                data.link = values.link;
+            }
 
-        let data = {
-            simulator_id: state.isEdit ? state.simulator_id : state?.state ? state.state : state,
-            simulator_type: values.simulator_Type,
-            location: values.location,
-            link: values.link,
-            slider_type: values.slider_type,
-            slider_name: values.sccond_slider_type,
-            final_result_show: values.final_Result_enabled ? "1" : "0",
-            final_result: values.final_Result_enabled ? values.query_Result : '',
-            slider_result_json: resultArr,
-            question_type: values.simulator_Type == '2' && values.question_type,
-            questions: values.simulator_Type == '2' && questionArr,
-            link_with_description: values.simulator_Type == '3' && values.link_description,
-            more_videos: values.simulator_Type == '4' && scrbArr,
-            scrb_link: values.simulator_Type == '5' && values.base64Image
-        }
-        let res = ''
-        if (state?.isEdit) {
-            data.id = state.id
-            res = await ApiCall('PUT', '/simulator-topics-update', data)
-        } else {
+            if (values.simulator_Type == '2') {
+                data.question_type = values.question_type;
+                data.questions = questionArr;
+            }
 
-            res = await ApiCall('POST', '/add-simulator-topics', data)
-        }
-        let response = res?.data
-        if (response?.statusCode === 200 && response?.status == "success") {
-            navigate('/admin/simulator/topic', {
-                state: state.isEdit ? state.simulator_id : state?.state ? state.state : state
-            })
+            if (values.simulator_Type == '3') {
+                data.link_with_description = values.link_description;
+            }
+
+            if (values.simulator_Type == '4') {
+                data.more_videos = scrbArr;
+            }
+
+            if (values.simulator_Type == '5') {
+                data.scrb_link = values.base64Image;
+            }
+
+            console.log('Submitting simulator topic data:', data);
+
+            let res = ''
+            if (state?.isEdit) {
+                data.id = state.id
+                res = await ApiCall('PUT', '/simulator-topics-update', data)
+            } else {
+                res = await ApiCall('POST', '/add-simulator-topics', data)
+            }
+
+            console.log('API Response:', res);
+
+            let response = res?.data
+            if (response?.statusCode === 200 && response?.status == "success") {
+                navigate('/admin/simulator/topic', {
+                    state: state.isEdit ? state.simulator_id : state?.state ? state.state : state
+                })
+                setLoader(false)
+            } else {
+                console.error('API Error:', response);
+                alert(response?.message || 'Failed to save simulator topic. Please try again.');
+                setLoader(false)
+            }
+        } catch (error) {
+            console.error('Error saving simulator topic:', error);
+            alert('An error occurred while saving. Please check the console for details.');
             setLoader(false)
         }
     }
@@ -268,7 +300,7 @@ const AddsimulatorTopic = () => {
     }, [formik.values.simulator_Type])
 
     const getEditData = async () => {
-        let res = await GetApiCall('GET', `/simulator-topics-list-data?simulator_id=${state.id}`)
+        let res = await GetApiCall(`/simulator-topics-list-data?simulator_id=${state.id}`)
         let response = res?.data
         if (response?.statusCode === 200 && response?.status == "success") {
             let data = response?.data

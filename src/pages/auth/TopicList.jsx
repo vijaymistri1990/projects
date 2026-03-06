@@ -88,7 +88,7 @@ const TopicList = () => {
 
 
     const rowMarkup = topicList?.map(
-        ({ id, query, name, password, result_show }, index) => (
+        ({ id, title, query, name, password, result_show }, index) => (
             <IndexTable.Row
                 id={id}
                 key={id}
@@ -98,7 +98,7 @@ const TopicList = () => {
                     {(currentPage * 30 - 30) + index + 1}
                 </IndexTable.Cell>
                 <IndexTable.Cell>
-                    <span className="dropdown-link" onClick={() => navigate(`/simulator/${id}`, { state: Object.keys(isComplete).length && isComplete[id] ? isComplete[id] : false })}>{query}</span>
+                    <span className="dropdown-link" onClick={() => navigate(`/simulator/${id}`, { state: Object.keys(isComplete).length && isComplete[id] ? isComplete[id] : false })}>{title || query}</span>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
                     {Object.keys(isComplete).length && isComplete[id] ?

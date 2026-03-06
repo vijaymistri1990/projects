@@ -49,15 +49,15 @@ const Simulator = () => {
         let eatobj = {};
         if (isSubmitted && allSimulatorData.length && userSubData.length) {
             allSimulatorData.map((item, i) => {
-                if (item.slider_result_json !== '' && JSON.parse(item.slider_result_json).length) {
+                if (item.slider_result_json !== '' && (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json).length) {
                     if (item.slider_type == 0) {
-                        let result = JSON.parse(item.slider_result_json)[0];
+                        let result = (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json)[0];
                         needsobj[item.id] = { needsmin: result.left_0_rating_result_min, needsmax: result.left_0_rating_result_max }
                         eatobj[item.id] = { eatmin: result.right_0_rating_result_min, eatmax: result.right_0_rating_result_max }
                     } else {
                         let needsarr = [];
                         let eatarr = [];
-                        JSON.parse(item.slider_result_json).map((data, index) => {
+                        (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json).map((data, index) => {
                             needsarr.push({ needsmin: data[`left_${index}_rating_result_min`], needsmax: data[`left_${index}_rating_result_max`] })
                             eatarr.push({ eatmin: data[`right_${index}_rating_result_min`], eatmax: data[`right_${index}_rating_result_max`] })
                         })
@@ -69,9 +69,9 @@ const Simulator = () => {
             setNeedsRangeData(needsobj)
             setEatRangeData(eatobj)
             let suggestObj = {};
-            if (userSubData && userSubData.length && userSubData[0].simulator_topic_result && (userSubData[0].simulator_topic_result !== '') && JSON.parse(userSubData[0].simulator_topic_result)) {
-                Object.values(JSON.parse(userSubData[0].simulator_topic_result)).map((item, index) => {
-                    let id = Object.keys(JSON.parse(userSubData[0].simulator_topic_result))[index];
+            if (userSubData && userSubData.length && userSubData[0].simulator_topic_result && (userSubData[0].simulator_topic_result !== '') && (typeof userSubData[0].simulator_topic_result === 'string' ? JSON.parse(userSubData[0].simulator_topic_result) : userSubData[0].simulator_topic_result)) {
+                Object.values((typeof userSubData[0].simulator_topic_result === 'string' ? JSON.parse(userSubData[0].simulator_topic_result) : userSubData[0].simulator_topic_result)).map((item, index) => {
+                    let id = Object.keys((typeof userSubData[0].simulator_topic_result === 'string' ? JSON.parse(userSubData[0].simulator_topic_result) : userSubData[0].simulator_topic_result))[index];
                     newObj[id] = item.rating_result
                     suggestObj[id] = { value: item.final_result }
                 })
@@ -197,7 +197,7 @@ const Simulator = () => {
         if (allSimulatorData.length > 0) {
             allSimulatorData.map((item, index) => {
                 if (item.slider_type == 0) {
-                    let db_slider_result_json = (JSON.parse(item.slider_result_json))?.[0];
+                    let db_slider_result_json = ((typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json))?.[0];
                     let rightsideClassName = document.getElementsByClassName(`right-side-range-${item.id}`);
                     let leftsideClassName = document.getElementsByClassName(`left-side-range-${item.id}`);
                     if (rightsideClassName.length > 0 && leftsideClassName.length > 0) {
@@ -217,7 +217,7 @@ const Simulator = () => {
                     let leftsideMultiClassName = document.getElementsByClassName(`left-side-range-multi-${item.id}`);
                     if (rightsideMultiClassName.length > 0 && leftsideMultiClassName.length > 0) {
                         let input_left_bar_range = [];
-                        JSON.parse(item.slider_result_json).map((data, indexItem) => {
+                        (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json).map((data, indexItem) => {
                             input_left_bar_range.push({
                                 needs_result: Object.values(leftsideMultiClassName)[indexItem].getElementsByTagName('input')[0]?.value,
                                 eat_result: Object.values(rightsideMultiClassName)[indexItem].getElementsByTagName('input')[0]?.value,
@@ -235,15 +235,15 @@ const Simulator = () => {
         let arr = [];
         if (allSimulatorData.length) {
             allSimulatorData.map((item, i) => {
-                if (item.slider_result_json !== '' && JSON.parse(item.slider_result_json).length) {
+                if (item.slider_result_json !== '' && (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json).length) {
                     if (item.slider_type == 0) {
-                        let result = JSON.parse(item.slider_result_json)[0];
+                        let result = (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json)[0];
                         needsobj[item.id] = { needsmin: result.left_0_rating_result_min, needsmax: result.left_0_rating_result_max }
                         eatobj[item.id] = { eatmin: result.right_0_rating_result_min, eatmax: result.right_0_rating_result_max }
                     } else {
                         let needsarr = [];
                         let eatarr = [];
-                        JSON.parse(item.slider_result_json).map((data, index) => {
+                        (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json).map((data, index) => {
                             needsarr.push({ needsmin: data[`left_${index}_rating_result_min`], needsmax: data[`left_${index}_rating_result_max`] })
                             eatarr.push({ eatmin: data[`right_${index}_rating_result_min`], eatmax: data[`right_${index}_rating_result_max`] })
                         })
@@ -376,9 +376,9 @@ const Simulator = () => {
                             <div className='row query-dupes'>
                                 {allSimulatorData && allSimulatorData.length ?
                                     allSimulatorData.map((item, index) => {
-                                        let result_data = (item && item.slider_result_json && item.slider_result_json !== '') ? JSON.parse(item.slider_result_json) : [];
-                                        let meta_data = (item && item.link_meta && item.link_meta !== '') ? JSON.parse(item.link_meta) : {};
-                                        let youtube_json = (item && item.youtube_json && item.youtube_json !== '') ? JSON.parse(item.youtube_json) : [];
+                                        let result_data = (item && item.slider_result_json && item.slider_result_json !== '') ? (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json) : [];
+                                        let meta_data = (item && item.link_meta && item.link_meta !== '') ? (typeof item.link_meta === 'string' ? JSON.parse(item.link_meta) : item.link_meta) : {};
+                                        let youtube_json = (item && item.youtube_json && item.youtube_json !== '') ? (typeof item.youtube_json === 'string' ? JSON.parse(item.youtube_json) : item.youtube_json) : [];
                                         return (
                                             <div className='col-sm-6' key={index}>
                                                 <div className='query-content py-3'>
@@ -421,8 +421,8 @@ const Simulator = () => {
                                                                         <p className='query-description'>{Object.keys(meta_data).length ? meta_data.ogDescription : ''}</p>
                                                                         <hr className='hr-border-bottom' />
                                                                         <div className={`horizontal-quetion-bar ${item.question_type == 1 ? 'd-flex justify-content-between gap-2' : ""}`}>
-                                                                            {item.questions_json && item.questions_json !== "" ? JSON.parse(item.questions_json) ?
-                                                                                JSON.parse(item.questions_json).map((data, i) => {
+                                                                            {item.questions_json && item.questions_json !== "" ? (typeof item.questions_json === 'string' ? JSON.parse(item.questions_json) : item.questions_json) ?
+                                                                                (typeof item.questions_json === 'string' ? JSON.parse(item.questions_json) : item.questions_json).map((data, i) => {
                                                                                     if (item.question_type == 0) {
                                                                                         return (
                                                                                             <div key={i}>
