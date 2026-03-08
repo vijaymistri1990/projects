@@ -272,11 +272,11 @@ const simulatorTopicsSubData = async (req, res) => {
       let insert_simulatior_user_data = await SimulatorUserData.create({
         simulator_id: reqData?.simulator_id,
         user_id: user_id,
-        simulator_result: reqData?.simulator_result,
+        simulator_result: reqData?.simulator_result !== '' ? reqData?.simulator_result : null,
         simulator_comment: reqData?.simulator_comment,
         type: reqData?.type,
-        sxs_outcome: reqData?.sxs_outcome,
-        nm_outcome: reqData?.nm_outcome,
+        sxs_outcome: reqData?.sxs_outcome !== '' ? reqData?.sxs_outcome : null,
+        nm_outcome: reqData?.nm_outcome !== '' ? reqData?.nm_outcome : null,
         data: reqData?.simulator_topic_result, // Using JSONB field
       });
 
@@ -339,18 +339,18 @@ const performanceResult = async (req, res) => {
       // Use Sequelize to get performance data
       let perfomance_result_data = await PerformanceSheet.findAll({
         where: { user_id: user_id },
-        attributes: ["id", "user_id", "score", "performance_data"],
+        attributes: ["id", "user_id", "month", "result", "score", "performance_data"],
       });
 
-      if (perfomance_result_data.length > 0) {
+      if (perfomance_result_data && perfomance_result_data.length > 0) {
         handleSuccess(
           statusCode.OK,
-          en.DATA_RESET_SUCCESSFULLY,
+          en.DATA_FETCH_SUCCESSFULLY,
           perfomance_result_data,
           res
         );
       } else {
-        handleError(statusCode.OK, en.ERROR_NO_DATA_FOUND, res);
+        handleSuccess(statusCode.OK, en.DATA_FETCH_SUCCESSFULLY, [], res);
       }
     } else {
       handleError(statusCode.BAD_REQUEST, en.ERROR_SOMETHING_WRONG, res);
@@ -375,8 +375,7 @@ const performanceResultUpdate = async (req, res) => {
       // Use Sequelize to update performance data
       let [updateCount] = await PerformanceSheet.update(
         {
-          performance_data: reqData.result,
-          updated_at: new Date(),
+          result: reqData.result,
         },
         {
           where: {
@@ -415,7 +414,7 @@ const worksheet = async (req, res) => {
         attributes: ["id", "user_id", "worksheet_data"],
       });
 
-      if (work_result_data.length > 0) {
+      if (work_result_data && work_result_data.length > 0) {
         handleSuccess(
           statusCode.OK,
           en.DATA_FETCH_SUCCESSFULLY,
@@ -423,7 +422,7 @@ const worksheet = async (req, res) => {
           res
         );
       } else {
-        handleError(statusCode.OK, en.ERROR_NO_DATA_FOUND, res);
+        handleSuccess(statusCode.OK, en.DATA_FETCH_SUCCESSFULLY, [], res);
       }
     } else {
       handleError(statusCode.BAD_REQUEST, en.ERROR_SOMETHING_WRONG, res);
