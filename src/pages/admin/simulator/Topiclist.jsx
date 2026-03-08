@@ -181,13 +181,21 @@ const Topiclist = () => {
                     <div className='container'>
                         <div className='row query-dupes'>
                             {allSimulatorData && allSimulatorData.length ?
-                                allSimulatorData.map((item, index) => {
-                                    let result_data = (item && item.slider_result_json) ? (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json) : [];
-                                    let meta_data = (item && item.link_meta) ? (typeof item.link_meta === 'string' ? JSON.parse(item.link_meta) : item.link_meta) : {};
-                                    let youtube_json = (item && item.youtube_json) ? (typeof item.youtube_json === 'string' ? JSON.parse(item.youtube_json) : item.youtube_json) : [];
-                                    let questions_data = (item && item.questions_json) ? (typeof item.questions_json === 'string' ? JSON.parse(item.questions_json) : item.questions_json) : null;
-                                    return (
-                                        <div className='col-sm-6' key={index} >
+                                 [1, 2, 3, 4, 5].map(locNum => {
+                                     const leftItem = allSimulatorData.find(item => parseInt(item.location) === locNum);
+                                     const rightItem = allSimulatorData.find(item => parseInt(item.location) === locNum + 5);
+                                     if (!leftItem && !rightItem) return null;
+                                     return (
+                                         <div className='w-100 d-flex flex-wrap' key={`row-${locNum}`}>
+                                             {[leftItem, rightItem].map((item, colIndex) => {
+                                                 if (!item) return <div className='col-sm-6' key={`empty-${locNum}-${colIndex}`}></div>;
+                                                 let index = allSimulatorData.indexOf(item);
+                                                 let result_data = (item && item.slider_result_json) ? (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json) : [];
+                                                 let meta_data = (item && item.link_meta) ? (typeof item.link_meta === 'string' ? JSON.parse(item.link_meta) : item.link_meta) : {};
+                                                 let youtube_json = (item && item.youtube_json) ? (typeof item.youtube_json === 'string' ? JSON.parse(item.youtube_json) : item.youtube_json) : [];
+                                                 let questions_data = (item && item.questions_json) ? (typeof item.questions_json === 'string' ? JSON.parse(item.questions_json) : item.questions_json) : null;
+                                                 return (
+                                                     <div className='col-sm-6' key={index} >
                                             <div className='query-content py-3'>
                                                 <h6 className='p-2'>{simulatorLocation(item.location)} - <span className='link'>select dupes</span></h6>
                                                 <div className='content mx-2' style={{ pointerEvents: 'none' }}>
@@ -493,7 +501,10 @@ const Topiclist = () => {
                                             </div>
                                         </div>
                                     )
-                                }) :
+                                })}
+                            </div>
+                        )
+                    }) :
                                 <div className='justify-content-center'>
                                     <EmptyState
                                         heading="No Data Found"

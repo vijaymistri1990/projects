@@ -412,11 +412,19 @@ const Simulator = () => {
                             <Dashboard simulatorQueryData={simulatorQueryData} />
                             <div className='row query-dupes'>
                                 {allSimulatorData && allSimulatorData.length ?
-                                    allSimulatorData.map((item, index) => {
-                                        let result_data = (item && item.slider_result_json && item.slider_result_json !== '') ? (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json) : [];
-                                        let meta_data = (item && item.link_meta && item.link_meta !== '') ? (typeof item.link_meta === 'string' ? JSON.parse(item.link_meta) : item.link_meta) : {};
-                                        let youtube_json = (item && item.youtube_json && item.youtube_json !== '') ? (typeof item.youtube_json === 'string' ? JSON.parse(item.youtube_json) : item.youtube_json) : [];
-                                        return (
+                                     [1, 2, 3, 4, 5].map(locNum => {
+                                         const leftItem = allSimulatorData.find(item => parseInt(item.location) === locNum);
+                                         const rightItem = allSimulatorData.find(item => parseInt(item.location) === locNum + 5);
+                                         if (!leftItem && !rightItem) return null;
+                                         return (
+                                             <div className='w-100 d-flex flex-wrap' key={`row-${locNum}`}>
+                                                 {[leftItem, rightItem].map((item, colIndex) => {
+                                                     if (!item) return <div className='col-sm-6' key={`empty-${locNum}-${colIndex}`}></div>;
+                                                     let index = allSimulatorData.indexOf(item);
+                                                     let result_data = (item && item.slider_result_json && item.slider_result_json !== '') ? (typeof item.slider_result_json === 'string' ? JSON.parse(item.slider_result_json) : item.slider_result_json) : [];
+                                                     let meta_data = (item && item.link_meta && item.link_meta !== '') ? (typeof item.link_meta === 'string' ? JSON.parse(item.link_meta) : item.link_meta) : {};
+                                                     let youtube_json = (item && item.youtube_json && item.youtube_json !== '') ? (typeof item.youtube_json === 'string' ? JSON.parse(item.youtube_json) : item.youtube_json) : [];
+                                                     return (
                                             <div className='col-sm-6' key={index}>
                                                 <div className='query-content py-3'>
                                                     <h6 className='p-2'>{simulatorLocation(item.location)} - <span className='link'>select dupes</span></h6>
@@ -705,7 +713,7 @@ const Simulator = () => {
                                                                                         barRightColor={isShowBar ? '#f0f0f0' : 'yellow'}
                                                                                         // className={`right-side-range${item.id} eat`}
                                                                                         minValue={eatRangeData[item.id] && eatRangeData[item.id][indexItem] ? parseInt(eatRangeData[item.id][indexItem]?.eatmin) : 0}
-                                                                                        QmaxValue={isShowBar && eatRangeData[item.id] && eatRangeData[item.id][indexItem] ? parseInt(eatRangeData[item.id][indexItem]?.eatmax) : null}
+                                                                                        maxValue={isShowBar && eatRangeData[item.id] && eatRangeData[item.id][indexItem] ? parseInt(eatRangeData[item.id][indexItem]?.eatmax) : null}
                                                                                         step='0'
                                                                                     />
                                                                                     {getAverageResult(defaultSelected[item.id] && defaultSelected[item.id][indexItem] ? (parseInt(defaultSelected[item.id][indexItem].eat_result)) : 0, eatRangeData[item.id] && eatRangeData[item.id][indexItem] ? parseInt(eatRangeData[item.id][indexItem]?.eatmin) : 0, eatRangeData[item.id] && eatRangeData[item.id][indexItem] ? parseInt(eatRangeData[item.id][indexItem]?.eatmax) : 0, item.slider_name == '1' ? 'EAT Rating Score' : 'PQ Rating Score')}
@@ -738,15 +746,17 @@ const Simulator = () => {
                                                             setSuggestionBtn(arr);
                                                         }} />
                                                     </div>}
-
                                                     <div>
                                                         {/* <RangeCheck selectedValue={parseInt(defaultSelected[item.id]?.eat_result)} minValue={parseInt(needsRangeData[item.id]?.needsmin)} maxValue={parseInt(needsRangeData[item.id]?.needsmax)} /> */}
 
                                                     </div>
-                                                </div>
-                                            </div>
-                                        )
-                                    }) : ''}
+                                                 </div>
+                                             </div>
+                                         )
+                                     })}
+                                 </div>
+                             )
+                         }) : ''}
                                 {
                                     simulatorQueryData?.result_show == '1' &&
                                     <div>
