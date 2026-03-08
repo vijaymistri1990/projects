@@ -322,7 +322,7 @@ const Simulator = () => {
                 }
             })
         }
-        let sxs_outcome = '';
+        let sxs_outcome = null;
         if (simulatorQueryData?.result_show == '1') {
             if (simulatorQueryData?.result === parseInt(resultButton)) {
                 sxs_outcome = 1;
@@ -332,7 +332,7 @@ const Simulator = () => {
         }
         let data = {
             simulator_id: simulator_id,
-            simulator_result: simulatorQueryData?.result_show == '1' ? resultButton : '',
+            simulator_result: simulatorQueryData?.result_show == '1' ? resultButton : null,
             type: (simulatorQueryData?.locale == "Hindi(in)") ? 0 : 1,
             sxs_outcome: sxs_outcome,
             nm_outcome: nm_outcome,
