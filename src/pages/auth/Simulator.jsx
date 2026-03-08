@@ -422,12 +422,12 @@ const Simulator = () => {
                                                     <h6 className='p-2'>{simulatorLocation(item.location)} - <span className='link'>select dupes</span></h6>
                                                     <div className='content mx-2'>
                                                         {item.simulator_type != 3 && item.simulator_type != 5 && item.simulator_type != 4 ? <div className='d-flex gap-2'>
-                                                            <div>
+                                                            {/* <div>
                                                                 <img className='favicon-image' src={Object.keys(meta_data).length ? meta_data.favicon : noContent} />
-                                                            </div>
-                                                            <div>
+                                                            </div> */}
+                                                            {/* <div>
                                                                 <cite className='cite-url'>{Object.keys(meta_data).length && meta_data?.ogUrl ? (meta_data?.ogUrl?.length) ? meta_data?.ogUrl.length > 50 ? meta_data?.ogUrl.substring(0, 50) + '...' : meta_data?.ogUrl : '' : meta_data?.requestUrl}</cite>
-                                                            </div>
+                                                            </div> */}
                                                         </div> : <></>}
                                                         {item.simulator_type == 0 ?
                                                             <div className='simulagtor-type-0'>
@@ -516,14 +516,16 @@ const Simulator = () => {
                                                                             : item.simulator_type == 4 ? <div className='simulator-type-4'>
                                                                                 <div className='d-flex gap-2'>
                                                                                     <div>
-                                                                                        <img className='favicon-image' src={youtube_json.length ? youtube_json[0].video_meta.favicon : noContent} />
+                                                                                        <img className='favicon-image' src={youtube_json?.length ? (youtube_json[0]?.video_meta?.favicon || noContent) : noContent} />
                                                                                     </div>
                                                                                     <div>
-                                                                                        <cite className='cite-url'>{youtube_json.length ? youtube_json[0].video_meta.ogUrl : ''}</cite>
+                                                                                        <cite className='cite-url'>{youtube_json?.length ? (youtube_json[0]?.video_meta?.ogUrl || youtube_json[0]?.link || '') : ''}</cite>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className='scrb-youtube-video'>
-                                                                                    <img className='scrb-youtube-video-preview scrb-img' src={`${youtube_json.length ? youtube_json[0].video_meta?.ogImage?.url : ''}`} />
+                                                                                    <a href={youtube_json?.[0]?.video_meta?.ogUrl || youtube_json?.[0]?.link || '#'} target='_blank' rel='noreferrer'>
+                                                                                        <img className='scrb-youtube-video-preview scrb-img' src={`${youtube_json?.length ? (youtube_json[0]?.video_meta?.ogImage?.url || (youtube_json[0]?.link?.match(/(?:v=|youtu\.be\/)([^&?]+)/)?.[1] ? `https://img.youtube.com/vi/${youtube_json[0].link.match(/(?:v=|youtu\.be\/)([^&?]+)/)[1]}/hqdefault.jpg` : '')) : ''}`} onError={(e) => { e.target.onerror = null; e.target.src = noContent; }} />
+                                                                                    </a>
                                                                                     <div className="scrb-youtube-icon">
                                                                                         <svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                                                                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"></path>
@@ -532,17 +534,23 @@ const Simulator = () => {
                                                                                 </div>
                                                                                 {youtube_json && youtube_json.length ?
                                                                                     youtube_json.slice(1).map((meta, index) => {
+                                                                                        const videoId = meta?.link?.match(/(?:v=|youtu\.be\/)([^&?]+)/)?.[1];
+                                                                                        const thumb = meta?.video_meta?.ogImage?.url || (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : '');
                                                                                         return (
                                                                                             <div className='d-flex py-2 align-items-center' key={index}>
-                                                                                                <img className='youtube-video-preview' src={`${meta ? meta.video_meta?.ogImage?.url : ''}`} />
+                                                                                                <a href={meta?.link || '#'} target='_blank' rel='noreferrer'>
+                                                                                                    <img className='youtube-video-preview' src={thumb || noContent} onError={(e) => { e.target.onerror = null; e.target.src = noContent; }} />
+                                                                                                </a>
 
-                                                                                                <div className='px-2'>
+                                                                                                <div className='px-2 w-100'>
                                                                                                     <span></span>
                                                                                                     <div>
-                                                                                                        <span className='youtube-content'>{meta.video_meta.ogDescription}</span>
-                                                                                                        <div className='d-flex py-2 align-items-center'>
-                                                                                                            <h6>{meta.video_meta.ogSiteName}  · </h6>
-                                                                                                            <span>&nbsp;{meta.video_meta.ogDate}</span>
+                                                                                                        <span className='youtube-content'>{meta?.video_meta?.ogDescription || ''}</span>
+                                                                                                        <div className='d-flex py-2 align-items-center flex-wrap'>
+                                                                                                            <a href={meta?.link || '#'} target='_blank' rel='noreferrer' className='youtube-hover-link'>
+                                                                                                                <h6 className='query-description' style={{margin: 0, fontSize: '14px', wordBreak: 'break-all', display: 'inline'}}>{meta?.video_meta?.ogSiteName || meta?.link || ''}</h6>
+                                                                                                            </a>
+                                                                                                            {meta?.video_meta?.ogDate && <span style={{display: 'inline'}}>&nbsp;·&nbsp;{meta.video_meta.ogDate}</span>}
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>

@@ -50,7 +50,12 @@ const AddsimulatorTopic = () => {
         link: (simulatorType != '5' && simulatorType != '4') && Yup.string().required('required'),
         slider_type: Yup.string().required('required'),
         sccond_slider_type: Yup.string().required('required'),
-        query_Result: resultEnable && Yup.string().required('required'),
+        final_Result_enabled: Yup.boolean(),
+        query_Result: Yup.string().when('final_Result_enabled', {
+            is: true,
+            then: (schema) => schema.required('required'),
+            otherwise: (schema) => schema.notRequired()
+        }),
         left_min: Yup.array().of(Yup.number().positive('Must be Positive').required('required')),
         left_max: Yup.array().of(Yup.number().positive('Must be Positive').required('required')),
 
@@ -239,7 +244,7 @@ const AddsimulatorTopic = () => {
                 slider_type: values.slider_type,
                 slider_name: values.sccond_slider_type,
                 final_result_show: values.final_Result_enabled ? "1" : "0",
-                final_result: values.final_Result_enabled ? values.query_Result : '',
+                final_result: values.final_Result_enabled ? values.query_Result : null,
                 slider_result_json: resultArr,
             }
 
@@ -305,7 +310,7 @@ const AddsimulatorTopic = () => {
         if (response?.statusCode === 200 && response?.status == "success") {
             let data = response?.data
             setImage(data.scrb_link)
-            formik.setFieldValue('scrb', JSON.parse(data.youtube_link_arr))
+            formik.setFieldValue('scrb', data.youtube_link_arr ? (typeof data.youtube_link_arr === 'string' ? JSON.parse(data.youtube_link_arr) : data.youtube_link_arr) : [""])
             formik.setFieldValue('base64Image', data.scrb_link)
             formik.setFieldValue('image', data.scrb_link)
             formik.setFieldValue('simulator_Type', data.simulator_type.toString())
