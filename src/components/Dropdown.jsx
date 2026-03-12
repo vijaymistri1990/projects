@@ -1,20 +1,25 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 
-const DropdownAction = (MenuRef, ToggleRef) => {
-  document.addEventListener("mousedown", (e) => {
-    if (ToggleRef.current && ToggleRef.current.contains(e.target)) {
-      MenuRef.current.classList.toggle("show");
-    } else {
-      if (MenuRef.current && !MenuRef.current.contains(e.target)) {
-        MenuRef.current.classList.remove("show");
-      }
-    }
-  });
-};
 const Dropdown = (props) => {
   const toggleRef = useRef();
   const menuRef = useRef();
-  DropdownAction(menuRef, toggleRef);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (toggleRef.current && toggleRef.current.contains(e.target)) {
+        menuRef.current?.classList.toggle("show");
+      } else {
+        if (menuRef.current && !menuRef.current.contains(e.target)) {
+          menuRef.current.classList.remove("show");
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <div className="dropdown">
       <button

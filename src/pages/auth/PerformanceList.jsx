@@ -21,21 +21,29 @@ function PerformanceList() {
 
     const GetPerformanceData = async () => {
         setLoading(true)
-        let res = await GetUserApiCall('GET', `/performance-result`, header);
-        if (res.data.status === 'success' && res.data.statusCode === 200) {
-            const finalData = res?.data?.data;
-            if(finalData.length){
-                finalData.map((item)=>{
-                    switch(item.month) {case 1:item.month_name = 'January';break;case 2:item.month_name = 'February';break;case 3:item.month_name = 'March';break;case 4:item.month_name = 'April';break;case 5:item.month_name = 'May';break;case 6:item.month_name = 'June';break;case 7:item.month_name = 'July';break;case 8:item.month_name = 'August';break;case 9:item.month_name = 'September';break;case 10:item.month_name = 'October';break;case 11:item.month_name = 'November';break;case 12:item.month_name = 'December';break;default:break;}
-                    return item;
-                });
-                setPerformanceData(finalData);
-            }
-            setLoading(false)
-        } else {
-            setPerformanceData([])
-            setLoading(false)
+        // let res = await GetUserApiCall('GET', `/performance-result`, header);
+        // if (res.data.status === 'success' && res.data.statusCode === 200) {
+        //     const finalData = res?.data?.data;
+        
+        const finalData = [
+            { id: 1, month: 1, result: 'Pass' },
+            { id: 2, month: 2, result: 'Fail' },
+            { id: 3, month: 3, result: 'In Progress' },
+            { id: 4, month: 4, result: 'Pass' }
+        ];
+
+        if(finalData.length){
+            finalData.map((item)=>{
+                switch(item.month) {case 1:item.month_name = 'January';break;case 2:item.month_name = 'February';break;case 3:item.month_name = 'March';break;case 4:item.month_name = 'April';break;case 5:item.month_name = 'May';break;case 6:item.month_name = 'June';break;case 7:item.month_name = 'July';break;case 8:item.month_name = 'August';break;case 9:item.month_name = 'September';break;case 10:item.month_name = 'October';break;case 11:item.month_name = 'November';break;case 12:item.month_name = 'December';break;default:break;}
+                return item;
+            });
+            setPerformanceData(finalData);
         }
+        setLoading(false)
+        // } else {
+        //     setPerformanceData([])
+        //     setLoading(false)
+        // }
     };
 
     const handleChange = useCallback(() => {

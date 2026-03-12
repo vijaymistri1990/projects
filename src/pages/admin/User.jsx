@@ -121,11 +121,12 @@ const User = () => {
 
   return (
     <>
-      {loader ? <Skeleton /> : <>   <div className="mt-2 sl-add-button">
+      <div className="mt-2 sl-add-button">
         <Button onClick={() => navigate("/admin/user/create")}>
           Add user
         </Button>
       </div>
+      {loader ? <Skeleton /> : <>
         <LegacyCard>
           <div className="mt-2">
             <IndexTable

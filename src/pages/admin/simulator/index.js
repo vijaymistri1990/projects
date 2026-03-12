@@ -148,13 +148,13 @@ const Simulator = () => {
 
     return (
         <div className="mt-2 ">
+            <div className="sl-add-button">
+                <Button onClick={() => navigate("/admin/add-simulator")}>
+                    Add Simulator
+                </Button>
+            </div>
             {
                 loader ? <Skeleton /> : <>
-                    <div className="sl-add-button">
-                        <Button onClick={() => navigate("/admin/add-simulator")}>
-                            Add Simulator
-                        </Button>
-                    </div>
                     <LegacyCard>
                         <div className="mt-2">
                             <IndexTable

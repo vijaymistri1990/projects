@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Dropdown from "./Dropdown";
 import { Link, useNavigate } from "react-router-dom";
 import { removeCookies, getCookies } from "../helper/commonFunctions";
@@ -23,7 +23,7 @@ const Header = () => {
           .map(word => word[0])
           .join('')
           .toUpperCase()
-          .slice(0, 2);
+          .slice(0, 3);
 
         setUserInitials(initials || "U");
       } catch (error) {
@@ -45,20 +45,34 @@ const Header = () => {
     <div className="admin-header">
       <Dropdown
         customAvatar={
-          <div
-            className="tw-w-10 tw-h-10 tw-rounded-full tw-bg-[#5960e6] tw-flex tw-items-center tw-justify-center tw-text-white tw-font-semibold tw-text-sm tw-cursor-pointer hover:tw-bg-[#484fcc] tw-transition-colors tw-shadow-md"
-            title={userName || "User"}
-          >
-            {userInitials}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '8px 12px', borderRadius: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+              <span style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500' }}>
+                Hello, <span style={{ fontWeight: '600', color: '#1a202c' }}>{userName || "User"}</span>
+              </span>
+            </div>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                background: '#5960e6',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: '600',
+                fontSize: '14px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              }}
+              title={userName || "User"}
+            >
+              {userInitials}
+            </div>
           </div>
         }
         menu={
           <>
-            {userName && (
-              <li className="tw-px-4 tw-py-2 tw-border-b tw-border-gray-200">
-                <div className="tw-text-sm tw-font-semibold tw-text-gray-700">{userName}</div>
-              </li>
-            )}
             <li className="dropdown-list" onClick={() => logout()}>
               <Link to="/admin/dashboard" className="dropdown-link">
                 <i className="bx bx-power-off dropdown-link-icon"></i>
