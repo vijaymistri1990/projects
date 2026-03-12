@@ -1,4 +1,3 @@
-import React from 'react'
 import { Alert, Button, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from 'reactstrap'
 import * as Icon from 'react-feather'
 

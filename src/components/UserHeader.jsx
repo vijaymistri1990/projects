@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, } from 'reactstrap';
 import tsLogo from '../assets/img/slc-logo-preview.png'
-import Dropdowns from './Dropdown';
 import { removeCookies, getCookies } from '../helper/commonFunctions';
 
 const UserHeader = () => {

@@ -16,16 +16,10 @@ if (hostname === "demo.themunim.com") {
     commonApi = "https://api.zianai.in/"
     sampleFileApi = 'https://api.zianai.in/'
 } else if (hostname === "localhost") {
-    // // /* this for local*/
-    // apiEndpoint = "http://192.168.0.113:5000/api"
-    // commonApi = "http://192.168.0.113:5000/"
     apiEndpoint = 'http://localhost:4000/api'
     commonApi = 'http://localhost:4000/'
     sampleFileApi = 'http://localhost:4000/'
-    // apiEndpoint = "https://devprofnode.themunim.com/api"
-    // commonApi = "https://devprofnode.themunim.com/"
 }
-
 module.exports = {
     apiEndpoint,
     commonApi,

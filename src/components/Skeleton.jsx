@@ -1,10 +1,7 @@
-import React from 'react'
 import {
-    SkeletonPage,
     Layout,
     LegacyCard,
     SkeletonBodyText,
-    TextContainer, SkeletonDisplayText
 } from '@shopify/polaris';
 const Skeleton = () => {
     return (
@@ -17,9 +14,6 @@ const Skeleton = () => {
                 <LegacyCard sectioned>
                     <SkeletonBodyText />
                 </LegacyCard>
-                {/* <LegacyCard sectioned>
-                    <SkeletonBodyText />
-                </LegacyCard> */}
             </Layout.Section>
 
         </Layout >

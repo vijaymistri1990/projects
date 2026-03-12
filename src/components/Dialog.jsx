@@ -1,4 +1,3 @@
-import React from "react";
 import InboxCleanUpVector from "../assets/img/vector/inbox-cleanup-amico.svg";
 
 const Dialog = ({ message, name, onDialog }) => {
